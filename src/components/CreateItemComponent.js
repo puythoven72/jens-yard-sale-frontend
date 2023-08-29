@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import ItemServices from "./services/ItemServices";
 import Dropdown from "./services/Dropdown";
-import { useNavigate } from "react-router-dom"
+import { Form, useNavigate } from "react-router-dom"
 import { Link, useParams } from "react-router-dom";
+import Utility from "./services/Utility";
 function CreateItemComponent() {
 
 
@@ -17,6 +18,10 @@ function CreateItemComponent() {
     const [allStatus, setAllStatus] = useState([]);
     const [allConditions, setAllConditions] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
+
+
+    //used for form validation
+    const [validated, setValidated] = useState(false);
 
 
     const navigate = useNavigate();
@@ -90,7 +95,6 @@ function CreateItemComponent() {
     useEffect(() => {
         if (id) {
             getItemByID(id);
-
         }
         options();
 
@@ -109,6 +113,8 @@ function CreateItemComponent() {
 
     function saveUpdateItem(e) {
         e.preventDefault();
+
+        Utility.validateForm();
 
         const name = itemName;
         const description = itemDescription;
@@ -149,7 +155,8 @@ function CreateItemComponent() {
                     <div className="card col-md-6 offset-md-3 offset-md-3">
                         <h2 className="text-center">{title()}</h2>
                         <div className="card-body">
-                            <form>
+
+                            <form className="needs-validation" novalidate>
                                 <div className="form-group mb-2">
                                     <label className="form-label">Item Name</label>
                                     <input type="text"
@@ -157,8 +164,12 @@ function CreateItemComponent() {
                                         name="itemName" id="itemName"
                                         className="form-control"
                                         value={itemName}
+                                        required
                                         onChange={e => setItemName(e.target.value)}>
                                     </input>
+                                    <div class="valid-feedback">
+                                        Looks good!
+                                    </div>
                                 </div>
                                 <div className="form-group mb-2">
                                     <label className="form-label">Item Description</label>
@@ -223,7 +234,7 @@ function CreateItemComponent() {
 
 
 
-                                <button className="btn btn-success" onClick={(e) => saveUpdateItem(e)}>Save</button>
+                                <button className="btn btn-success" onClick={(e) => saveUpdateItem(e)} type="submit">Save</button>
                                 <Link to={"/"} className="btn btn-danger">Cancel</Link>
                             </form>
 

@@ -56,13 +56,6 @@ function ListItemsComponent() {
         })
     };
 
-//     function formatDate(date){
-
-// Utility.formatDate(date)
-
-//     };
-
-
 
     return (
         <div className="container">
@@ -71,8 +64,8 @@ function ListItemsComponent() {
 
 
 
-            <table className="table table-bordered table-striped">
-                <thead>
+            <table className="table table-secondary table-bordered table-hover rounded rounded-3 overflow-hidden">
+                <thead className="table-dark">
                     <tr>
 
                         <th>Item</th>
@@ -94,17 +87,32 @@ function ListItemsComponent() {
                                 <td>{item.condition}</td>
                                 <td>{item.price}</td>
                                 <td>{item.saleStatus}</td>
-                                {item.saleStatus ==="Sold"?
-                                <td>
-                                    Item Sold On: {Utility.formatDate(item.purchaseDate)}
+                                {item.saleStatus === "Sold" ?
+                                    <td>
+                                        Item Sold On: {Utility.formatDate(item.purchaseDate)}
 
-                                </td> :
-                                <td><Link to={`/edit-item/${item.id}`} className="btn btn-info">Update</Link>
-                                    <button className="btn btn-danger" onClick={() => { deleteItem(item.id) }}>Delete</button>
-                                    <button className="btn btn-success" onClick={() => { markSold(item.id) }}>Mark As Sold</button>
-                                </td>
+                                    </td> :
+                                    <td>
 
-                        }
+                                        <div className="text-end" >
+                                            <small className="text-end">Mark Sold </small>
+                                            <input
+                                                className="form-check-input text-end" type="checkbox" id="markSold" 
+                                                label="Mark As Sold"
+                                                value={item.isPurchased}
+                                                onChange={() => {markSold(item.id)}}
+                                            />
+
+                                        </div>
+
+
+                                        <Link to={`/edit-item/${item.id}`} className="btn btn-info">Update</Link>
+                                        <button className="btn btn-danger" onClick={() => { deleteItem(item.id) }}>Delete</button>
+                                        {/* <button className="btn btn-success" onClick={() => { markSold(item.id) }}>Mark As Sold</button> */}
+
+                                    </td>
+
+                                }
                             </tr>
 
 
@@ -114,7 +122,7 @@ function ListItemsComponent() {
 
 
             </table>
-        </div>
+        </div >
 
     )
 

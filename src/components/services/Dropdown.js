@@ -1,48 +1,51 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 
 function Dropdown(props) {
-   
-    const [dropDownVal, setDropDownVal] = useState(props.defaultval);
+
+    const [dropDownVal, setDropDownVal] = useState("");
 
     useEffect(() => {
-        
-        setDropDownVal(props.defaultval)
-        }, [props.options])
+        setDefaults();
+    }, [props.options]);
 
 
-        function handleChange(e){
-            console.log(e.target.value + "IS THE VAL");
-            setDropDownVal(e.target.value);
-            props.setFieldStateValue(e.target.value);
+
+    function setDefaults() {
+        if (props.defaultval) {
+            setDropDownVal(props.defaultval);
+
+        } else {
+            if (props.options) {
+                let val = props.options[0];
+                if (val) {
+                    console.log(val.selectionValue)
+                    setDropDownVal(val.selectionValue);
+                    props.setFieldStateValue(val.selectionValue);
+                }
+            }
         }
+    }
+
+    function handleChange(e) {
+        setDropDownVal(e.target.value);
+        props.setFieldStateValue(e.target.value);
+    }
 
 
     return <>
 
-{props.defaultval == 'Sold' ? 
-
-    <div>SOLD</div> : 
-
-        <select {...props} value={dropDownVal} onChange={ handleChange} className="form-control" >
-            selected = {props.o}
-            {
-                props.options.map(o =>
-                    //   <option key={o.id}>
-                    //         {Object.values(o)[1]}
-                    //     </option>
-
-
-
-                    <option value={Object.values(o)[1]} key={o.id}>
-                        {Object.values(o)[1]}
-                    </option>
-                )
-
-            }
-
-        </select>
-
-}
+        {props.defaultval == 'Sold' ?
+            <div>SOLD</div> :
+            <select {...props} value={dropDownVal} onChange={handleChange} className="form-control" >
+                {
+                    props.options.map(o =>    
+                        <option value={o.selectionValue} key={o.id}>
+                            {o.selectionValue}
+                        </option>
+                    )
+                }
+            </select>
+        }
     </>;
 }
 export default Dropdown;
