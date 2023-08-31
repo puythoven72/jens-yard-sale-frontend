@@ -20,7 +20,8 @@ function Dropdown(props) {
                 if (val) {
                     console.log(val.selectionValue)
                     setDropDownVal(val.selectionValue);
-                    props.setFieldStateValue(val.selectionValue);
+              //      props.setFieldStateValue(val.selectionValue);
+                    props.setFieldStateValue(props.field,val.selectionValue);
                 }
             }
         }
@@ -28,12 +29,12 @@ function Dropdown(props) {
 
     function handleChange(e) {
         setDropDownVal(e.target.value);
-        props.setFieldStateValue(e.target.value);
+        props.setFieldStateValue(props.field,e.target.value);
     }
 
 
     return <>
-
+   {props.field}   is field
         {props.defaultval == 'Sold' ?
             <div>SOLD</div> :
             <select {...props} value={dropDownVal} onChange={handleChange} className="form-control" >

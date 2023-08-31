@@ -1,32 +1,23 @@
 import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import ItemServices from "./services/ItemServices";
-import Dropdown from "./services/Dropdown";
-import { Form, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Link, useParams } from "react-router-dom";
-import Utility from "./services/Utility";
+import { Container, Row, Col } from 'react-bootstrap'
+import Dropdown from "./services/Dropdown";
+
 function CreateItemComponent() {
-
-
-    const [itemName, setItemName] = useState("");
-    const [itemDescription, setItemDescription] = useState("");
-    const [itemCategory, setItemCategory] = useState("");
-    const [itemCondition, setItemCondition] = useState("");
-    const [itemPrice, setItemPrice] = useState(0);
-    const [itemStatus, setItemStatus] = useState("");
+    const [form, setForm] = useState({});
+    const [errors, setErrors] = useState({});
 
     //used for options
     const [allStatus, setAllStatus] = useState([]);
     const [allConditions, setAllConditions] = useState([]);
     const [allCategories, setAllCategories] = useState([]);
 
-
-    //used for form validation
-    const [validated, setValidated] = useState(false);
-
-
     const navigate = useNavigate();
     const { id } = useParams();
-
 
 
 
@@ -37,8 +28,6 @@ function CreateItemComponent() {
                 setAllStatus(response.data)
                 console.log(response.data[0].salesStatus + " IS RESPONSE");
             }
-
-
         ).catch(error => {
             console.log(error);
         })
@@ -48,7 +37,6 @@ function CreateItemComponent() {
                 setAllConditions(response.data)
                 console.log(response.data[0].salesStatus + " IS RESPONSE");
             }
-
 
         ).catch(error => {
             console.log(error);
@@ -60,14 +48,9 @@ function CreateItemComponent() {
                 console.log(response.data[0].salesStatus + " IS RESPONSE");
             }
 
-
         ).catch(error => {
             console.log(error);
         })
-
-
-
-
     };
 
 
@@ -75,12 +58,19 @@ function CreateItemComponent() {
     function getItemByID(id) {
         ItemServices.getItemById(id).then(
             (response) => {
-                setItemName(response.data.name)
-                setItemDescription(response.data.description)
-                setItemCategory(response.data.category)
-                setItemCondition(response.data.condition)
-                setItemPrice(response.data.price)
-                setItemStatus(response.data.saleStatus)
+                if (id) {
+                    setForm({
+                        form,
+                        ["name"]: response.data.name,
+                        ["description"]: response.data.description,
+                        ["price"]: response.data.price,
+                        ["category"]: response.data.category,
+                        ["condition"]: response.data.condition,
+                        ["saleStatus"]: response.data.saleStatus
+                    }
+                    )
+                }
+
             }
         ).catch(
             error => {
@@ -97,157 +87,189 @@ function CreateItemComponent() {
             getItemByID(id);
         }
         options();
-
     }
         , [])
 
 
 
     const title = () => {
-
         if (id) {
             return "Update Item";
         }
         return "Add Item";
     };
 
-    function saveUpdateItem(e) {
-        e.preventDefault();
 
-        Utility.validateForm();
-
-        const name = itemName;
-        const description = itemDescription;
-        const category = itemCategory;
-        const condition = itemCondition;
-        const price = itemPrice;
-        const saleStatus = itemStatus;
-        console.log(saleStatus);
-        const item = { id, name, description, category, condition, price, saleStatus };
-        console.log(item + " IS THE ITEM!!!");
-
-        if (id) {
-            ItemServices.updateItem(id, item).then((res) => {
-                console.log(res.data);
-                navigate("/");
-            }
-            ).catch((err) => {
-                console.error(err);
-            });
-
-        } else {
-
-            ItemServices.createItem(item).then((res) => {
-                console.log(res.data)
-            }
-            ).catch((err) => {
-                console.error(err);
-            });
+    const setField = (field, value) => {
+        console.log(field + " IS THE FIELD");
+        console.log(value + " IS THE VALUE");
+        console.log(form + " IS FORM");
+        setForm({
+            ...form,
+            [field]: value
         }
-
+        )
+        if (!!errors[field]) {
+            setErrors({
+                ...errors,
+                [field]: null
+            })
+        }
     }
 
-    return (
-        <div>
-            <br /><br />
-            <div className="container">
-                <div className="row">
-                    <div className="card col-md-6 offset-md-3 offset-md-3">
-                        <h2 className="text-center">{title()}</h2>
-                        <div className="card-body">
-
-                            <form className="needs-validation" novalidate>
-                                <div className="form-group mb-2">
-                                    <label className="form-label">Item Name</label>
-                                    <input type="text"
-                                        placeholder="Enter Item Name"
-                                        name="itemName" id="itemName"
-                                        className="form-control"
-                                        value={itemName}
-                                        required
-                                        onChange={e => setItemName(e.target.value)}>
-                                    </input>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div className="form-group mb-2">
-                                    <label className="form-label">Item Description</label>
-                                    <input type="text"
-                                        placeholder="Enter Item Description"
-                                        name="itemDescription" id="itemDescription"
-                                        className="form-control"
-                                        value={itemDescription}
-                                        onChange={(e) => setItemDescription(e.target.value)}>
-                                    </input>
-                                </div>
-                                <div className="form-group mb-2">
-                                    <label className="form-label">Item Category</label>
-                                    {/* <input type="text"
-                                        placeholder="Enter Item Category"
-                                        name="itemCategory" id="itemCategory"
-                                        className="form-control"
-                                        value={itemCategory}
-                                        onChange={(e) => setItemCategory(e.target.value)}>
-                                    </input> */}
-                                    <Dropdown options={allCategories} defaultval={itemCategory} setFieldStateValue={setItemCategory} />
-                                </div>
-                                <div className="form-group mb-2">
-                                    <label className="form-label">Item Condition</label>
-                                    {/* <input type="text"
-                                        placeholder="Enter Item Condition"
-                                        name="itemCondition" id="itemCondition"
-                                        className="form-control"
-                                        value={itemCondition}
-                                        onChange={(e) => setItemCondition(e.target.value)}>
-                                    </input> */}
-                                    <Dropdown options={allConditions} defaultval={itemCondition} setFieldStateValue={setItemCondition} />
-                                </div>
-
-                                <div className="form-group mb-2">
-                                    <label className="form-label">Item Price</label>
-                                    <input type="number"
-                                        placeholder="Enter Item Price"
-                                        name="itemPrice" id="itemPrice"
-                                        className="form-control"
-                                        value={itemPrice}
-                                        onChange={(e) => setItemPrice(e.target.value)}
-                                        data-type="currency"
-                                    >
-                                    </input>
-                                </div>
-                                {/* <div className="form-group mb-2">
-                                    <label className="form-label">Status</label>
-                                    <input type="text"
-                                        placeholder="Choose Status"
-                                        name="itemStatus" id="itemStatus"
-                                        className="form-control"
-                                        value={itemStatus}
-                                        onChange={(e) => setItemStatus(e.target.value)}>
-                                    </input> */}
-
-                                <div className="form-group mb-2">
-                                    <label className="form-label">Status</label>
-                                    <Dropdown options={allStatus} defaultval={itemStatus} setFieldStateValue={setItemStatus} />
-                                </div>
-                                {/* </div> */}
 
 
+    const validateForm = () => {
+        const { name, description, category, condition, price, saleStatus } = form;
+        let newErrors = {};
+        console.log(form);
+        
+        if (!name) {
+            newErrors.name = "Please Enter Item Name.";
+        }
+        if (!description) {
+            newErrors.description = "Please Enter Item Description.";
+        }
 
-                                <button className="btn btn-success" onClick={(e) => saveUpdateItem(e)} type="submit">Save</button>
-                                <Link to={"/"} className="btn btn-danger">Cancel</Link>
-                            </form>
+        if (!category) {
+            newErrors.category = "Please Enter Item Category."
+        }
+
+        if (!condition) {
+            newErrors.condition = "Please Enter Item Condition."
+        }
+
+        if (!price || price < 1) {
+            newErrors.price = "Please Enter A  Valid Item Price."
+        }
+
+        if (!saleStatus) {
+            newErrors.saleStatus = "Please Enter Item Status."
+        }
 
 
-                        </div>
+        console.log(newErrors + " errors")
+        return newErrors;
+    }
+
+    function saveUpdateItem(e) {
+        e.preventDefault();
+        console.log("FORM:" + JSON.stringify(form));
+        const formErrors = validateForm();
+        if (Object.keys(formErrors).length > 0) {
+            setErrors(formErrors);
+        } else {
+            if (id) {
+                ItemServices.updateItem(id, form).then((res) => {
+                    console.log(res.data);
+                    navigate("/");
+                }
+                ).catch((err) => {
+                    console.error(err);
+                });
+
+            } else {
+
+                ItemServices.createItem(form).then((res) => {
+                    console.log(res.data)
+                }
+                ).catch((err) => {
+                    console.error(err);
+                });
+            }
+        }
+    }
+
+    return <div>
+        <br /><br />
+        <Container>
+            <Row>
+                <div className="card col-md-6 offset-md-3 offset-md-3">
+                    <h2 className="text-center">{title()}</h2>
+                    <div className="card-body">
+                        <Form>
+                            <Form.Group controlId="name">
+                                <Form.Label>Item Name</Form.Label>
+                                <Form.Control type="text"
+                                    placeholder="Enter Item Name"
+                                    onChange={e => { setField("name", e.target.value) }}
+                                    value={form.name}
+                                    defaultValue={""}
+                                    isInvalid={!!errors.name} />
+
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.name}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+
+                            <Form.Group controlId="description">
+                                <Form.Label>Item Description</Form.Label>
+                                <Form.Control type="text"
+                                    placeholder="Enter Item Description"
+                                    onChange={e => { setField("description", e.target.value) }}
+                                    value={form.description}
+                                    defaultValue={""}
+                                    isInvalid={!!errors.description} />
+
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.description}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+
+                            <div className="form-group mb-2">
+                                <label className="form-label">Item Category</label>
+                                <Dropdown options={allCategories} defaultval={form.category} setFieldStateValue={setField} form={form} field = {"category"} />
+                            </div>
+
+                            <div className="form-group mb-2">
+                                <label className="form-label">Item Condition</label>
+                                <Dropdown options={allConditions} defaultval={form.condition} setFieldStateValue={setField} form={form} field = {"condition"}  />
+                            </div>
+
+                            <Form.Group controlId="price">
+                                <Form.Label>Item Price</Form.Label>
+                                <Form.Control type="number"
+                                    placeholder="Enter Item Price"
+                                    onChange={e => { setField("price", e.target.value) }}
+                                    value={form.price}
+                                    defaultValue={0}
+                                    isInvalid={!!errors.price} />
+
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.price}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+
+
+
+                            <div className="form-group mb-2">
+                                <label className="form-label">Item Sales Status</label>
+                                <Dropdown options={allStatus} defaultval={form.saleStatus} setFieldStateValue={setField} form={form} field = {"saleStatus"} />
+                            </div>
+                            <div className="row gy-2">
+                                <Col className="sm-4 col-md-12">
+                                    <Row>
+                                        <Button variant="btn btn-success" type="submit" onClick={saveUpdateItem}>
+                                            Save
+                                        </Button>
+                                    </Row>
+                                </Col>
+                                <Col className=" col-12">
+                                    <Row >
+                                        <Link to={"/"} className="btn btn-danger">Cancel</Link>
+                                    </Row>
+
+                                </Col>
+                            </div>
+                        </Form>
 
                     </div>
                 </div>
-            </div>
-
-        </div>
-    )
-
+            </Row>
+        </Container>
+    </div>
 }
 
 export default CreateItemComponent;
