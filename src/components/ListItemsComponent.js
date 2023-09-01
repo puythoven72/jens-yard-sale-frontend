@@ -85,7 +85,7 @@ function ListItemsComponent() {
                                 <td>{item.description}</td>
                                 <td>{item.category}</td>
                                 <td>{item.condition}</td>
-                                <td>{item.price}</td>
+                                <td>{Utility.formatCurrency(item.price)}</td>
                                 <td>{item.saleStatus}</td>
                                 {item.saleStatus === "Sold" ?
                                     <td>

@@ -19,7 +19,7 @@ function CreateItemComponent() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-
+    
 
     const options = async () => {
         console.log("in options");
@@ -235,6 +235,7 @@ function CreateItemComponent() {
                                     onChange={e => { setField("price", e.target.value) }}
                                     value={form.price}
                                     defaultValue={0}
+                                   
                                     isInvalid={!!errors.price} />
 
                                 <Form.Control.Feedback type="invalid">
