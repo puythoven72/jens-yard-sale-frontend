@@ -20,7 +20,7 @@ function App() {
           </Routes>
         </Router>
       </div>
-      <FooterComponent />
+      {/* <FooterComponent /> */}
     </div>
    
   );
