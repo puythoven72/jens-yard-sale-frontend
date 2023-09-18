@@ -20,7 +20,10 @@ function CreateItemComponent() {
   const [allCategories, setAllCategories] = useState([]);
 
   const navigate = useNavigate();
+  //id passed in from item list for updates
   const { id } = useParams();
+  //this itemID will be passed to the image save
+  const [itemID, setItemId] = useState();
 
   const [uploadProgress, setUploadProgress] = useState("getUpLoad");
   const [imageUrl, setImageUrl] = useState(undefined);
@@ -79,6 +82,7 @@ function CreateItemComponent() {
   useEffect(() => {
     if (id) {
       getItemByID(id);
+      setItemId(id);
     }
     options();
   }, []);
@@ -88,6 +92,14 @@ function CreateItemComponent() {
       return "Update Item";
     }
     return "Add Item";
+  };
+
+
+  const imageButtonTitle = () => {
+    if (id) {
+      return "Update Images";
+    }
+    return "Add Images";
   };
 
   const setField = (field, value) => {
@@ -158,6 +170,8 @@ function CreateItemComponent() {
         ItemServices.createItem(form)
           .then((res) => {
             console.log(res.data);
+            setItemId(res.data.id);
+
           })
           .catch((err) => {
             console.error(err);
@@ -168,7 +182,9 @@ function CreateItemComponent() {
 
   const onImageChange = async (failedImages, successImages) => {
     console.log("IMAGE CHANGED");
-    setUploadProgress('upLoading')
+    setUploadProgress('upLoading');
+
+
     try {
       console.log('successImages', successImages);
       const parts = successImages[0].split(";");
@@ -177,9 +193,11 @@ function CreateItemComponent() {
       // const data = parts[2];
       let blob = dataURItoBlob(successImages[0]);
 
+      console.log(id + " IMAGE ID");
       let file = new FormData();
       file.append("file", blob, name);
       file.append("isMain", true)
+      file.append("itemId", itemID)
 
       await ItemServices.createItemImage(file);
       setImageUrl(`./doc-uploads/${name}`);
@@ -201,7 +219,9 @@ function CreateItemComponent() {
     if (dataURI.split(',')[0].indexOf('base64') >= 0)
       byteString = atob(dataURI.split(',')[1]);
     else
-      byteString = unescape(dataURI.split(',')[1]);
+      // byteString = unescape(dataURI.split(',')[1]);
+
+      byteString = encodeURI(dataURI.split(',')[1]);
 
     // separate out the mime component
     var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
@@ -346,12 +366,25 @@ function CreateItemComponent() {
                       <Button
                         variant="btn btn-success"
                         type="submit"
-                        onClick={saveUpdateItem}
-                      >
+                        onClick={saveUpdateItem}>
                         Save
                       </Button>
                     </Row>
                   </Col>
+
+                  <div>
+                    {itemID ? (
+                      <Col className="sm-4 col-md-12">
+                        <Row>
+                        <Link to={`/add-images/${itemID}`} className="btn btn-warning">{imageButtonTitle()}</Link>    
+                        </Row>
+                      </Col>
+                    ) : (
+                      null
+                    )}
+                  </div>
+
+
                   <Col className=" col-12">
                     <Row>
                       <Link to={"/"} className="btn btn-danger">
@@ -366,10 +399,10 @@ function CreateItemComponent() {
         </Row>
       </Container>
 
-{content()}
+      {content()}
 
 
-      
+
     </div>
   );
 }

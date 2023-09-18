@@ -5,6 +5,7 @@ import ListItemsComponent from "./components/ListItemsComponent";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import CreateItemComponent from "./components/CreateItemComponent";
+import AddImagesComponents from "./components/AddImagesComponents";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
               <Route path="/" element={<ListItemsComponent />} />
               <Route path="/add-item" element={<CreateItemComponent />} />
               <Route path="/edit-item/:id" element={<CreateItemComponent />} />
+              <Route path="/add-images/:id" element={<AddImagesComponents />} />
           </Routes>
         </Router>
       </div>
