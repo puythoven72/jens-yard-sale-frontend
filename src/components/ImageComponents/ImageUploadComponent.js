@@ -12,7 +12,6 @@ const ImageUploadComponent= props => (
 
   
         <div>
-           before {props.testProps} is the props
             <Container>
                 <Row>
                     <div className="card col-md-6 offset-md-3 offset-md-3">

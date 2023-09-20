@@ -56,6 +56,11 @@ class ItemService {
   }
 
 
+  getAllItemImages(itemId) {
+    console.log(itemId + " is the ID");
+    return axios.get(`${IMAGE_ADMIN}/getByItemId/${itemId}`);
+  }
+
 }
 
 export default new ItemService;
