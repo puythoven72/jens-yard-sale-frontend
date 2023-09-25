@@ -14,7 +14,8 @@ function AddImagesComponent() {
   const [imageUrl, setImageUrl] = useState(undefined);
   const [imgErrorMessage, setImgErrorMessage] = useState("");
   const [imagesForItem, setImagesForItem] = useState([]);
-
+  const [primaryImageForItem, setPrimaryImageForItem] = useState([]);
+  const [itemImageUpdate, setItemImageUpdate] = useState("");
 
 
 
@@ -22,17 +23,45 @@ function AddImagesComponent() {
   const getItemImages = async () => {
     if (id) {
       await ItemServices.getAllItemImages(id).then((res) => {
-        console.log(res.data);
-        setImagesForItem(res.data);
+        //console.log(JSON.stringify(res.data) + " PATH");
+        //  setImagesForItem(res.data);
+        // parsePrimaryImage(JSON.stringify(res.data));
+      //  console.log(JSON.stringify(res.data) + " DATA ");
+        parsePrimaryImage(res.data);
+        //  setUploadProgress("getUpLoad");
+
       }
       )
-
     }
   };
 
+
+  function parsePrimaryImage(data) {
+   // let data = JSON.parse(jsonData);
+    console.log(JSON.stringify(data) + " IS DATA");
+    data.filter((element) => {
+      if (element.primary) {
+        console.log(JSON.stringify(element) +" E ");
+        let index = data.indexOf(element);
+        console.log(data.indexOf(element) + " PRIME ");
+        // remove the primary from the list
+        if (index >= 0) {
+          data.splice(index, 1);
+        }
+        
+        setPrimaryImageForItem([element]);
+        console.log(primaryImageForItem + " the store");
+      }
+    })
+    console.log(data[0]);
+    setImagesForItem(data);
+
+  }
+
+
   useEffect(() => {
     getItemImages();
-  }, [uploadProgress]);
+  }, [uploadProgress, itemImageUpdate]);
 
 
 
@@ -65,9 +94,7 @@ function AddImagesComponent() {
 
 
   const onImageChange = async (failedImages, successImages) => {
-    console.log("IMAGE CHANGED");
     setUploadProgress('upLoading');
-
 
     try {
       console.log('successImages', successImages);
@@ -80,7 +107,7 @@ function AddImagesComponent() {
       console.log(id + " IMAGE ID");
       let file = new FormData();
       file.append("file", blob, name);
-      file.append("isMain", true)
+      file.append("isMain", false)
       file.append("itemId", id)
 
       await ItemServices.createItemImage(file);
@@ -115,9 +142,10 @@ function AddImagesComponent() {
     for (var i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
     }
-
     return new Blob([ia], { type: mimeString });
   }
+
+
 
 
 
@@ -125,25 +153,36 @@ function AddImagesComponent() {
   return (
 
     <div>
-      PICTURES {id}
+      ID {id}
 
       {content()}
 
 
       <Container >
+        <Row className="d-flex justify-content-center   border-3 mt-2">
+          {
+           primaryImageForItem.map((primaryItem) => {
+              let path = `../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
+              return (
 
-        <Row className="d-flex justify-content-center  border mt-2">
+                <Row className="d-flex justify-content-center  border mt-2">
+                  
+                  <ImageCardComponent path={path} imageData={JSON.stringify(primaryImageForItem[0])} setItemImageUpdate={setItemImageUpdate} />
+                </Row>
+              )
+            })
+          }
+
+
           {
             imagesForItem.map((item) => {
 
               let path = `../doc-uploads/${item.itemId}/${item.name}`;
-
               return (
-                <ImageCardComponent path={path} imageData={JSON.stringify(item)} />
+                <ImageCardComponent path={path} imageData={JSON.stringify(item)} setItemImageUpdate={setItemImageUpdate} />
               )
 
             })
-
           }
         </Row>
       </Container>
@@ -151,9 +190,9 @@ function AddImagesComponent() {
     </div>
 
 
+
+
   )
-
-
 
 
 }

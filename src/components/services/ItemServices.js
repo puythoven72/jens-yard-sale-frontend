@@ -61,6 +61,15 @@ class ItemService {
     return axios.get(`${IMAGE_ADMIN}/getByItemId/${itemId}`);
   }
 
+  markImageAsPrimary(id) {
+    console.log(typeof Number(id) + " " + id);
+    return axios.patch(`${IMAGE_ADMIN}/markAsPrimary/${id}`);
+  }
+
+  deleteImageById(id) {
+    return axios.delete(`${IMAGE_ADMIN}/deleteImage/${id}`);
+  }
+
 }
 
 export default new ItemService;
