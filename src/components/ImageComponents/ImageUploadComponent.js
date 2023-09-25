@@ -15,10 +15,15 @@ const ImageUploadComponent= props => (
             <Container>
                 <Row>
                     <div className="card col-md-6 offset-md-3 offset-md-3">
-                        <h2 className="text-center">Upload Image</h2>
+                        
                         <div className="card-body">
                             <Form>
-                            <Form.Label>Upload</Form.Label>
+                            <Form.Label className='center-text'>
+                                
+                                <p>Upload Image For Item: {props.itemData.name}</p>
+                                <p>Description: {props.itemData.description}</p>
+                            
+                            </Form.Label>
                             <ImageUpLoader
                                 key='file'
                                 withIcon={true}

@@ -6,7 +6,11 @@ import ImageUploadComponent from "./ImageUploadComponent";
 import ImageCardComponent from "./ImageCardComponent";
 
 
-function AddImagesComponent() {
+import { useLocation } from 'react-router-dom';
+
+
+
+function AddImagesComponent(props) {
 
 
   const { id } = useParams();
@@ -16,8 +20,10 @@ function AddImagesComponent() {
   const [imagesForItem, setImagesForItem] = useState([]);
   const [primaryImageForItem, setPrimaryImageForItem] = useState([]);
   const [itemImageUpdate, setItemImageUpdate] = useState("");
+  const [itemData, setItemData] = useState({});
+  const [editItemPage, setEditItemPage] = useState("");
 
-
+  const location = useLocation()
 
 
   const getItemImages = async () => {
@@ -26,7 +32,7 @@ function AddImagesComponent() {
         //console.log(JSON.stringify(res.data) + " PATH");
         //  setImagesForItem(res.data);
         // parsePrimaryImage(JSON.stringify(res.data));
-      //  console.log(JSON.stringify(res.data) + " DATA ");
+        //  console.log(JSON.stringify(res.data) + " DATA ");
         parsePrimaryImage(res.data);
         //  setUploadProgress("getUpLoad");
 
@@ -37,29 +43,37 @@ function AddImagesComponent() {
 
 
   function parsePrimaryImage(data) {
-   // let data = JSON.parse(jsonData);
+    // let data = JSON.parse(jsonData);
     console.log(JSON.stringify(data) + " IS DATA");
     data.filter((element) => {
       if (element.primary) {
-        console.log(JSON.stringify(element) +" E ");
+        console.log(JSON.stringify(element) + " E ");
         let index = data.indexOf(element);
         console.log(data.indexOf(element) + " PRIME ");
         // remove the primary from the list
         if (index >= 0) {
           data.splice(index, 1);
         }
-        
+
         setPrimaryImageForItem([element]);
-        console.log(primaryImageForItem + " the store");
+
       }
     })
-    console.log(data[0]);
     setImagesForItem(data);
 
   }
 
 
   useEffect(() => {
+    if (location.state) {
+      // let _itemData = location.state.body.form ;
+      setItemData(location.state.body.form);
+      console.log(location.state.from);
+      setEditItemPage(location.state.from);
+
+
+    }
+
     getItemImages();
   }, [uploadProgress, itemImageUpdate]);
 
@@ -71,12 +85,12 @@ function AddImagesComponent() {
 
     switch (uploadProgress) {
       case "getUpLoad":
-        return <ImageUploadComponent onImageChange={onImageChange} testProps={"TESTING"} />;
+        return <ImageUploadComponent onImageChange={onImageChange} itemData={itemData} />;
       case "upLoading":
         return <div>Uploading....</div>;
       case "uploaded":
 
-        return <ImageUploadComponent onImageChange={onImageChange} testProps={"TESTING"} />;
+        return <ImageUploadComponent onImageChange={onImageChange} itemData={itemData} />;
 
 
 
@@ -152,21 +166,21 @@ function AddImagesComponent() {
 
   return (
 
-    <div>
+    <div className="card col-md-6 offset-md-3 offset-md-3">
       ID {id}
 
       {content()}
 
 
       <Container >
-        <Row className="d-flex justify-content-center   border-3 mt-2">
+
+        <Row className="justify-content-center">
           {
-           primaryImageForItem.map((primaryItem) => {
+            primaryImageForItem.map((primaryItem) => {
               let path = `../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
               return (
+                <Row className="justify-content-center">
 
-                <Row className="d-flex justify-content-center  border mt-2">
-                  
                   <ImageCardComponent path={path} imageData={JSON.stringify(primaryImageForItem[0])} setItemImageUpdate={setItemImageUpdate} />
                 </Row>
               )
@@ -185,17 +199,36 @@ function AddImagesComponent() {
             })
           }
         </Row>
+
+        <Row className="mt-2">
+          <Col className=" col-12">
+            <Row>
+              <Link to={`/edit-item/${id}`} className="btn btn-danger">
+                Cancel
+              </Link>
+            </Row>
+          </Col>
+        </Row>
+
+
+        <Row className="mt-2">
+          <Col className=" col-12">
+            <Row>
+              <Link to={"/"} className="btn btn-success">
+                Done
+              </Link>
+            </Row>
+          </Col>
+        </Row>
+
       </Container>
 
     </div>
 
-
-
-
   )
-
-
 }
+
+
 
 
 export default AddImagesComponent;
