@@ -1,30 +1,50 @@
 import "./App.css";
 import FooterComponent from "./components/FooterComponent";
 import HeaderComponent from "./components/HeaderComponent";
-import ListItemsComponent from "./components/ListItemsComponent";
-
+import ListItemsComponent from "./components/AdminComponents/ListItemsComponent";
+import CreateItemComponent from "./components/AdminComponents/CreateItemComponent";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import CreateItemComponent from "./components/CreateItemComponent";
 import AddImagesComponent from "./components/ImageComponents/AddImagesComponent";
+import LoginComponent from "./components/UserComponents/LoginComponent";
+import RegisterComponent from "./components/UserComponents/RegisterComponent";
+import PrivateRoutes from "./protectedroutes/ProtectedRoutes";
+import HomeComponent from "./components/HomeComponent";
+import DisplayItemsComponent from "./components/DisplayItemsComponent";
+import { Container } from "react-bootstrap";
+
+
 
 function App() {
   return (
     <div>
       <HeaderComponent />
-
-      <div className="container">
+      <HomeComponent />
+      <Container style={{ backgroundColor: '#6b5e51' }}>
         <Router>
-          <Routes>     
-              <Route path="/" element={<ListItemsComponent />} />
-              <Route path="/add-item" element={<CreateItemComponent />} />
-              <Route path="/edit-item/:id" element={<CreateItemComponent />} />
-              <Route path="/add-images/:id" element={<AddImagesComponent />} />
+          <Routes>
+            <Route element={<PrivateRoutes />}>
+              <Route path="/admin" element={<ListItemsComponent />} />
+              <Route path="/admin/add-item" element={<CreateItemComponent />} />
+              <Route path="/admin/edit-item/:id" element={<CreateItemComponent />} />
+              <Route path="/admin/add-images/:id" element={<AddImagesComponent />} />
+
+            </Route>
+            {/* <Route path="/admin" element={<ListItemsComponent />} />
+            <Route path="/admin/add-item" element={<CreateItemComponent />} />
+            <Route path="/admin/edit-item/:id" element={<CreateItemComponent />} />
+            <Route path="/admin/add-images/:id" element={<AddImagesComponent />} /> */}
+
+            <Route path="/" element={<DisplayItemsComponent />} />
+
+            <Route path="/user/login" element={<LoginComponent />} />
+            <Route path="/user/register" element={<RegisterComponent />} />
+
           </Routes>
         </Router>
-      </div>
-      {/* <FooterComponent /> */}
+      </Container>
+    
     </div>
-   
+
   );
 }
 

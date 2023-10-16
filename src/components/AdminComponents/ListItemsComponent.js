@@ -1,8 +1,9 @@
 
 import { useEffect, useState } from "react";
-import ItemServices from "./services/ItemServices";
+import ItemServices from "../services/ItemServices";
 import { Link, useNavigate } from "react-router-dom";
-import Utility from "./services/Utility";
+import Utility from "../services/Utility";
+import AuthServices from "../services/AuthServices";
 
 
 
@@ -60,7 +61,7 @@ function ListItemsComponent() {
     return (
         <div className="container">
             <h2 className="text-center">Items</h2>
-            <Link to={"/add-item"} className="btn btn-primary mb-2">Add Item</Link>
+            <Link to={"/admin/add-item"} className="btn btn-primary mb-2">Add Item</Link>
 
 
 
@@ -105,8 +106,8 @@ function ListItemsComponent() {
 
                                         </div>
 
-
-                                        <Link to={`/edit-item/${item.id}`} className="btn btn-info">Update</Link>
+                                        
+                                        <Link to={`/admin/edit-item/${item.id}`} className="btn btn-info">Update</Link>
                                         <button className="btn btn-danger" onClick={() => { deleteItem(item.id) }}>Delete</button>
                                         {/* <button className="btn btn-success" onClick={() => { markSold(item.id) }}>Mark As Sold</button> */}
 

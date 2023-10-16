@@ -1,3 +1,17 @@
+.backDrop{
+
+background-color: #948FA5;
+
+
+}
+
+
+.containerBackDrop{
+    background-color: #A0A58F;
+}
+
+
+
 .footer{
 position: absolute;
 bottom: 0;
@@ -7,4 +21,16 @@ background-color: black;
 text-align: center;
 color: darkgrey;
 
+}
+
+.homeBanner{
+    background-color: #8FA59F;
+    color: white;
+    width: 100%;
+    height: 120px;
+}
+
+
+.navigationBar{
+    background-color:  #6b5e51;
 }

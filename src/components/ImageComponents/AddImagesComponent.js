@@ -177,7 +177,7 @@ function AddImagesComponent(props) {
         <Row className="justify-content-center">
           {
             primaryImageForItem.map((primaryItem) => {
-              let path = `../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
+              let path = `../../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
               return (
                 <Row className="justify-content-center">
 
@@ -191,7 +191,7 @@ function AddImagesComponent(props) {
           {
             imagesForItem.map((item) => {
 
-              let path = `../doc-uploads/${item.itemId}/${item.name}`;
+              let path = `../../doc-uploads/${item.itemId}/${item.name}`;
               return (
                 <ImageCardComponent path={path} imageData={JSON.stringify(item)} setItemImageUpdate={setItemImageUpdate} />
               )
@@ -203,7 +203,7 @@ function AddImagesComponent(props) {
         <Row className="mt-2">
           <Col className=" col-12">
             <Row>
-              <Link to={`/edit-item/${id}`} className="btn btn-danger">
+              <Link to={`/admin/edit-item/${id}`} className="btn btn-danger">
                 Cancel
               </Link>
             </Row>
@@ -214,7 +214,7 @@ function AddImagesComponent(props) {
         <Row className="mt-2">
           <Col className=" col-12">
             <Row>
-              <Link to={"/"} className="btn btn-success">
+              <Link to={"/admin"} className="btn btn-success">
                 Done
               </Link>
             </Row>

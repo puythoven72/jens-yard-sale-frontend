@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import ItemServices from "./services/ItemServices";
+import ItemServices from "../services/ItemServices";
 import { useNavigate } from "react-router-dom";
 import { Link, useParams } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import Dropdown from "./services/Dropdown";
-import ImageUploadComponent from "./ImageComponents/ImageUploadComponent";
+import Dropdown from "../services/Dropdown";
+
 
 
 
@@ -59,8 +59,8 @@ function CreateItemComponent() {
       });
   };
 
-  function getItemByID(id) {
-    ItemServices.getItemById(id)
+  async function  getItemByID(id) {
+  await  ItemServices.getItemById(id)
       .then((response) => {
         if (id) {
           setForm({
@@ -83,7 +83,6 @@ function CreateItemComponent() {
     if (id) {
       getItemByID(id);
       setItemId(id);
-      console.log(form.name + " FORM IS GOTTEN");
     }
     options();
   }, []);
@@ -162,7 +161,7 @@ function CreateItemComponent() {
         ItemServices.updateItem(id, form)
           .then((res) => {
             console.log(res.data);
-            navigate("/");
+            navigate("/admin");
           })
           .catch((err) => {
             console.error(err);
@@ -294,9 +293,9 @@ function CreateItemComponent() {
                     {itemID ? (
                       <Col className="sm-4 col-md-12">
                         <Row>                       
-                          <Link to={`/add-images/${itemID}`} className="btn btn-warning"
+                          <Link to={`/admin/add-images/${itemID}`} className="btn btn-warning"
                            state={{
-                            from: "/edit-item/"+{itemID},  
+                            from: "/admin/edit-item/"+{itemID},  
                             body: {form}
                           }}>
                              {imageButtonTitle()}
@@ -311,7 +310,7 @@ function CreateItemComponent() {
 
                   <Col className=" col-12">
                     <Row>
-                      <Link to={"/"} className="btn btn-danger">
+                      <Link to={"/admin"} className="btn btn-danger">
                         Cancel
                       </Link>
                     </Row>
