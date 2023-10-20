@@ -11,8 +11,8 @@ const ImageUploadComponent= props => (
     // const [imgErrorMessage,setImgErrorMessage] = useState("");
 
   
-        <div>
-            <Container>
+        
+            <Container style={{ backgroundColor: '#F4DFB6' }} >
                 <Row>
                     <div className="card col-md-6 offset-md-3 offset-md-3">
                         
@@ -47,7 +47,7 @@ const ImageUploadComponent= props => (
 
 
 
-        </div>
+       
 
 
 

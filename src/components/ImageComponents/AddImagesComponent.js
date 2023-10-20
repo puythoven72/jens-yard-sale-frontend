@@ -73,7 +73,6 @@ function AddImagesComponent(props) {
 
 
     }
-
     getItemImages();
   }, [uploadProgress, itemImageUpdate]);
 
@@ -166,13 +165,13 @@ function AddImagesComponent(props) {
 
   return (
 
-    <div className="card col-md-6 offset-md-3 offset-md-3">
-      ID {id}
+    <div className="card col-md-6 offset-md-3 offset-md-3"  style={{ backgroundColor: '#F4DFB6' }}>
+   
 
       {content()}
 
 
-      <Container >
+      <Container  style={{ backgroundColor: '#F4DFB6' }}>
 
         <Row className="justify-content-center">
           {

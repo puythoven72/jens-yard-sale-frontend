@@ -6,6 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { Link, useParams } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import Dropdown from "../services/Dropdown";
+import "../../App.css"
+
+
+
+
+import Modal from 'react-bootstrap/Modal';
+import Utility from "../services/Utility";
 
 
 
@@ -18,6 +25,23 @@ function CreateItemComponent() {
   const [allStatus, setAllStatus] = useState([]);
   const [allConditions, setAllConditions] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+
+  const [currentDropDownField, setCurrentDropDownField] = useState("");
+  const [currentDropDownValue, setCurrentDropDownValue] = useState("");
+  const [show, setShow] = useState(false);
+
+  const handleClose = () => {
+    setCurrentDropDownField("");
+    setCurrentDropDownValue("");
+    setShow(false);
+  }
+  const handleShow = (dropDownVal) => {
+    console.log(dropDownVal + " get the val")
+    setCurrentDropDownField(dropDownVal);
+    setShow(true);
+  };
+
+
 
   const navigate = useNavigate();
   //id passed in from item list for updates
@@ -59,8 +83,8 @@ function CreateItemComponent() {
       });
   };
 
-  async function  getItemByID(id) {
-  await  ItemServices.getItemById(id)
+  async function getItemByID(id) {
+    await ItemServices.getItemById(id)
       .then((response) => {
         if (id) {
           setForm({
@@ -85,7 +109,7 @@ function CreateItemComponent() {
       setItemId(id);
     }
     options();
-  }, []);
+  }, [currentDropDownField]);
 
   const title = () => {
     if (id) {
@@ -102,10 +126,9 @@ function CreateItemComponent() {
     return "Add Images";
   };
 
+
   const setField = (field, value) => {
-    console.log(field + " IS THE FIELD");
-    console.log(value + " IS THE VALUE");
-    console.log(form + " IS FORM");
+
     setForm({
       ...form,
       [field]: value,
@@ -152,7 +175,7 @@ function CreateItemComponent() {
 
   function saveUpdateItem(e) {
     e.preventDefault();
-    console.log("FORM:" + JSON.stringify(form));
+
     const formErrors = validateForm();
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
@@ -181,16 +204,57 @@ function CreateItemComponent() {
   }
 
 
+  function updateModalDropDownValue(addValue) {
+    console.log(currentDropDownField + " Is the current dropdown");
+    setCurrentDropDownValue(addValue);
+  }
+
+
+
+  function saveNewDropDownVal() {
+    if (currentDropDownValue) {
+
+     const updateVal =  Utility.formatProperCase(currentDropDownValue)
+      var jsonArray = [];
+      if (currentDropDownField === "category") {
+
+        var jsonObject = { selectionType: 300, selectionValue: updateVal };
+        jsonArray.push(jsonObject);
+
+      }
+      if (currentDropDownField === "condition") {
+        var jsonObject = { selectionType: 200, selectionValue: updateVal };
+        jsonArray.push(jsonObject);
+      }
+
+
+      ItemServices.addNewCategory(jsonObject).then((response) => {
+        console.log(response.data);
+      })
+        .catch((err) => {
+          console.log(err);
+        })
+    }
+
+
+
+
+    //    setCurrentDropDownField("");
+    //  setCurrentDropDownValue("");
+    handleClose();
+  }
+
+
   return (
     <div>
       <br />
       <br />
-      <Container>
+      <Container style={{ backgroundColor: '#F4DFB6' }} >
         <Row>
-          <div className="card col-md-6 offset-md-3 offset-md-3">
+          <div className="card col-md-6 offset-md-3 offset-md-3" style={{ backgroundColor: '#f0eeed', color:"#AA422F"}}>
             <h2 className="text-center">{title()}</h2>
             <div className="card-body">
-              <Form>
+              <Form controlId="price" >
                 <Form.Group controlId="name">
                   <Form.Label>Item Name</Form.Label>
                   <Form.Control
@@ -236,6 +300,9 @@ function CreateItemComponent() {
                     form={form}
                     field={"category"}
                   />
+                <Button variant="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}  onClick={() => { handleShow("category") }}>
+                    Add Category
+                  </Button>
                 </div>
 
                 <div className="form-group mb-2">
@@ -247,9 +314,13 @@ function CreateItemComponent() {
                     form={form}
                     field={"condition"}
                   />
+                  <Button variant="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}  onClick={() => { handleShow("condition") }}>
+                    Add Condition
+                  </Button>
+
                 </div>
 
-                <Form.Group controlId="price">
+                <Form.Group >
                   <Form.Label>Item Price</Form.Label>
                   <Form.Control
                     type="number"
@@ -281,7 +352,8 @@ function CreateItemComponent() {
                   <Col className="sm-4 col-md-12">
                     <Row>
                       <Button
-                        variant="btn btn-success"
+                        variant="btn "
+                        style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}
                         type="submit"
                         onClick={saveUpdateItem}>
                         Save
@@ -292,13 +364,14 @@ function CreateItemComponent() {
                   <div>
                     {itemID ? (
                       <Col className="sm-4 col-md-12">
-                        <Row>                       
-                          <Link to={`/admin/add-images/${itemID}`} className="btn btn-warning"
-                           state={{
-                            from: "/admin/edit-item/"+{itemID},  
-                            body: {form}
-                          }}>
-                             {imageButtonTitle()}
+                        <Row>
+                          <Link to={`/admin/add-images/${itemID}`} className="btn " 
+                          style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}
+                            state={{
+                              from: "/admin/edit-item/" + { itemID },
+                              body: { form }
+                            }}>
+                            {imageButtonTitle()}
                           </Link>
                         </Row>
                       </Col>
@@ -310,7 +383,7 @@ function CreateItemComponent() {
 
                   <Col className=" col-12">
                     <Row>
-                      <Link to={"/admin"} className="btn btn-danger">
+                      <Link to={"/admin"} className="btn btn-secondary">
                         Cancel
                       </Link>
                     </Row>
@@ -323,6 +396,39 @@ function CreateItemComponent() {
       </Container>
 
 
+
+
+{/* Modal window to collect new dropdown values for category and condition */}
+
+      <Modal show={show} onHide={handleClose}  >
+        <Modal.Header closeButton style={{ backgroundColor: '#F4DFB6', color:"#AA422F" }}>
+          <Modal.Title >{currentDropDownField ? `Add ${currentDropDownField[0].toUpperCase() + currentDropDownField.slice(1)}` : ""}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: '#f0eeed', color:"#AA422F"}}>
+          <Form >
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>{currentDropDownField ? currentDropDownField[0].toUpperCase() + currentDropDownField.slice(1) : ""}</Form.Label>
+              <Form.Control
+                type="text"
+                onChange={(e) => {
+                  updateModalDropDownValue(e.target.value);
+                }}
+                placeholder="New value"
+                autoFocus
+              />
+            </Form.Group>
+
+          </Form>
+        </Modal.Body>
+        <Modal.Footer style={{ backgroundColor: '#f0eeed' }}>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button  variant="btn" onClick={saveNewDropDownVal} style={{ backgroundColor: '#F4DFB6', color:"#AA422F" }} >  
+            Add {currentDropDownField ? `Add ${currentDropDownField[0].toUpperCase() + currentDropDownField.slice(1)}` : ""}
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
 
 

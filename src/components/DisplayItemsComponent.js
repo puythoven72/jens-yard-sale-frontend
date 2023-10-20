@@ -37,7 +37,7 @@ function DisplayItemsComponent() {
         response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 300 })
         setAllCategories(response.data);
         console.log(JSON.stringify(response.data[0]) + " IS RESPONSE");
-      })
+      }).catch(error => { console.log(error) })
 
   }
 
@@ -53,7 +53,7 @@ function DisplayItemsComponent() {
           setItems(response.data);
 
 
-        })
+        }).catch(error => { console.log(error) })
 
     }
 
@@ -82,8 +82,8 @@ function DisplayItemsComponent() {
 
 
   return (
-    <Container style={{ backgroundColor: '#F4DFB6' }} >
-      <Row className="m-2">
+    <Container style={{ backgroundColor: '#F4DFB6' }} >   
+      <Row className="m-2 ">
         <Col>
           <Dropdown
             options={allCategories}
@@ -96,25 +96,27 @@ function DisplayItemsComponent() {
         </Col>
       </Row>
 
-      <Row>
+      <Row className="m-2">
+      <div class="card-group">
         {
           items.map((item) => {
 
             if (item.saleStatus === "For Sale")
               return (
+               
                 <ItemCardComponent item={item} />
+              
               )
 
           })
         }
-
+        </div>
       </Row>
+      
 
     </Container>
 
   )
-
-
 
 }
 export default DisplayItemsComponent;

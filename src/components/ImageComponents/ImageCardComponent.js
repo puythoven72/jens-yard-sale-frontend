@@ -33,22 +33,27 @@ function ImageCardComponent(props) {
     }
 
     return (
-        <Col lg={3} className="center-text m-1">
-            <Card style={{ width: '10rem' }}>
+        <Col lg={3} className="center-text m-1 ">
+
+
+
+            
+            <Card style={{ width: '10rem', backgroundColor: '#f0eeed', color: "#AA422F" }} className="h-100" >
                 {iData.primary === true ?
-                    <Card.Header>Primary</Card.Header>
+                    <Card.Header><strong>Primary</strong></Card.Header>
                     :
                     null
                 }
-                <Card.Title className="p-1">{iData.name}</Card.Title>
+                <Card.Title className="p-1 fs-6">{iData.name}</Card.Title>
                
-                <Card.Body>
-                <Image src={path} alt={iData.name} thumbnail  />
+                <Card.Body className="">
+                {/* <Image src={path} alt={iData.name} width="100%" height="100%" className="img-thumbnail"  />  */}
+                <Card.Img variant="top" src={path} alt={iData.name}  width="100%" height="100%" className="img-thumbnail" /> 
                     {iData.primary === true ?
                         null
                         :
                         <>
-                            <div className="row gy-2">
+                            {/* <div className="row gy-2 mt-auto">
                                 <Col className=" col-12">
                                     <Row>
                                         <Button onClick={() => markAsPrimary()} className="btn btn-primary">Primary</Button>
@@ -60,7 +65,20 @@ function ImageCardComponent(props) {
                                         <Button onClick={() => deleteImageById()} className="btn btn-danger">Delete</Button>
                                     </Row>
                                 </Col>
-                            </div>
+                            </div> */}
+                            <Card.Footer >
+                            <Col className=" col-12 pt-1" style={{ width: '100%'}}>
+                                    <Row>
+                                        <Button onClick={() => markAsPrimary()} className="btn btn-primary">Primary</Button>
+                                    </Row>
+                                </Col>
+
+                                <Col className=" col-12 pt-1">
+                                    <Row>
+                                        <Button onClick={() => deleteImageById()} className="btn btn-danger">Delete</Button>
+                                    </Row>
+                                </Col>
+                            </Card.Footer>
                         </>
 
                     }

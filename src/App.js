@@ -11,12 +11,13 @@ import PrivateRoutes from "./protectedroutes/ProtectedRoutes";
 import HomeComponent from "./components/HomeComponent";
 import DisplayItemsComponent from "./components/DisplayItemsComponent";
 import { Container } from "react-bootstrap";
+import DisplayItemDetailsComponent from "./components/DisplayItemDetailsComponent";
 
 
 
 function App() {
   return (
-    <div>
+    <div > 
       <HeaderComponent />
       <HomeComponent />
       <Container style={{ backgroundColor: '#6b5e51' }}>
@@ -35,7 +36,7 @@ function App() {
             <Route path="/admin/add-images/:id" element={<AddImagesComponent />} /> */}
 
             <Route path="/" element={<DisplayItemsComponent />} />
-
+            <Route path="/displayItem" element={<DisplayItemDetailsComponent />} />
             <Route path="/user/login" element={<LoginComponent />} />
             <Route path="/user/register" element={<RegisterComponent />} />
 

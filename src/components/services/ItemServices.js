@@ -2,10 +2,13 @@ import axios from 'axios';
 import AuthServices from './AuthServices';
 
 const ITEM_BASE_API_URL = "http://localhost:8080/api/items";
-const SALES_STATUS_SELECT_URL = ITEM_BASE_API_URL + "/drop-down-selections/100";
-const CONDITION_SELECT_URL = ITEM_BASE_API_URL + "/drop-down-selections/200";
-const CATEGORY_SELECT_URL = ITEM_BASE_API_URL + "/drop-down-selections/300";
+const DROP_DOWN_SELECTIONS_URL = "/drop-down-selections"
+const SALES_STATUS_SELECT_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/100`;
+const CONDITION_SELECT_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/200`;
+const CATEGORY_SELECT_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/300`;
+const CATEGORY_ADD_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/addNewCategory`;
 const IMAGE_ADMIN = ITEM_BASE_API_URL + "/image-admin";
+
 
 
 
@@ -75,8 +78,8 @@ class ItemService {
 
   getAllItemImages(itemId) {
     console.log(itemId + " is the ID");
-    let auth_header = AuthServices.getAuthHeaders();
-    return axios.get(`${IMAGE_ADMIN}/getByItemId/${itemId}`,auth_header);
+    //let auth_header = AuthServices.getAuthHeaders();
+    return axios.get(`${IMAGE_ADMIN}/getByItemId/${itemId}`);
   }
 
 
@@ -101,6 +104,12 @@ class ItemService {
 
   getAllItemsByCategory(category) {
     return axios.get(`${ITEM_BASE_API_URL}/itemsByCategory/${category}`);
+  }
+  addNewCategory(dropDownSelection){
+    let auth_header = AuthServices.getAuthHeaders();
+    //console.log(JSON.parse(dropDownSelection) + " Trying to add");
+    return axios.post(CATEGORY_ADD_URL,dropDownSelection,auth_header);
+
   }
 
 }
