@@ -13,6 +13,7 @@ import DisplayItemsComponent from "./components/DisplayItemsComponent";
 import { Container } from "react-bootstrap";
 import DisplayItemDetailsComponent from "./components/DisplayItemDetailsComponent";
 
+import Test from "./components/Test";
 
 
 function App() {
@@ -39,7 +40,7 @@ function App() {
             <Route path="/displayItem" element={<DisplayItemDetailsComponent />} />
             <Route path="/user/login" element={<LoginComponent />} />
             <Route path="/user/register" element={<RegisterComponent />} />
-
+            <Route path="/test" element={<Test/>} />
           </Routes>
         </Router>
       </Container>

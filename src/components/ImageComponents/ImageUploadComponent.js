@@ -12,16 +12,16 @@ const ImageUploadComponent= props => (
 
   
         
-            <Container style={{ backgroundColor: '#F4DFB6' }} >
+            <Container style={{ backgroundColor: '#F4DFB6', color:"#f0eeed" }}>  
                 <Row>
-                    <div className="card col-md-6 offset-md-3 offset-md-3">
+                    <div className="card col-md-6 offset-md-3 offset-md-3 " style={{ backgroundColor: '#F4DFB6', color:"#f0eeed" }}>
                         
-                        <div className="card-body">
+                        <div className="card-body mt-2 mb-2" style={{ backgroundColor: '#f0eeed', color: "#AA422F" }}>
                             <Form>
                             <Form.Label className='center-text'>
                                 
-                                <p>Upload Image For Item: {props.itemData.name}</p>
-                                <p>Description: {props.itemData.description}</p>
+                                <p><strong>Upload Image For Item:</strong> {props.itemData.name}</p>
+                                <p><strong>Description:</strong> {props.itemData.description}</p>
                             
                             </Form.Label>
                             <ImageUpLoader

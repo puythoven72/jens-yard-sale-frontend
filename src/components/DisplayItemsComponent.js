@@ -1,4 +1,4 @@
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, CardGroup } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import ItemServices from "./services/ItemServices";
 import ItemCardComponent from "./ItemCardComponent";
@@ -97,20 +97,17 @@ function DisplayItemsComponent() {
       </Row>
 
       <Row className="m-2">
-      <div class="card-group">
+       <CardGroup> 
         {
           items.map((item) => {
 
             if (item.saleStatus === "For Sale")
-              return (
-               
-                <ItemCardComponent item={item} />
-              
+              return ( 
+                  <ItemCardComponent item={item} />      
               )
-
           })
         }
-        </div>
+        </CardGroup>
       </Row>
       
 

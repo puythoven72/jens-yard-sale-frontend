@@ -171,7 +171,7 @@ function AddImagesComponent(props) {
       {content()}
 
 
-      <Container  style={{ backgroundColor: '#F4DFB6' }}>
+      <Container  style={{ backgroundColor: '#F4DFB6' }} >
 
         <Row className="justify-content-center">
           {
@@ -199,10 +199,22 @@ function AddImagesComponent(props) {
           }
         </Row>
 
+       
+
+
         <Row className="mt-2">
           <Col className=" col-12">
             <Row>
-              <Link to={`/admin/edit-item/${id}`} className="btn btn-danger">
+              <Link to={"/admin"} className="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}>
+                Done
+              </Link>
+            </Row>
+          </Col>
+        </Row>
+        <Row className="mt-2">
+          <Col className=" col-12">
+            <Row>
+              <Link to={`/admin/edit-item/${id}`} className="btn btn-secondary">
                 Cancel
               </Link>
             </Row>
@@ -210,15 +222,6 @@ function AddImagesComponent(props) {
         </Row>
 
 
-        <Row className="mt-2">
-          <Col className=" col-12">
-            <Row>
-              <Link to={"/admin"} className="btn btn-success">
-                Done
-              </Link>
-            </Row>
-          </Col>
-        </Row>
 
       </Container>
 

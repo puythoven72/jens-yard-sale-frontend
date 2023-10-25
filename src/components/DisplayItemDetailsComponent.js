@@ -93,6 +93,7 @@ function DisplayItemDetailsComponent() {
                     primaryImageForItem.map((primaryItem) => {
                         let path = `../../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
                         return (
+                            
                             <Col sm={8}>
                                 <Card style={{ backgroundColor: '#f0eeed', color: "#AA422F" }}  >
                                     <Card.Img variant="top" src={path} width="50%" height="50%" className="img-fluid" />

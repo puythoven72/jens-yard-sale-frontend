@@ -33,7 +33,7 @@ function ImageCardComponent(props) {
     }
 
     return (
-        <Col lg={3} className="center-text m-1 ">
+        <Col lg={3}  className="m-1  d-flex align-items-center justify-content-center text-center">
 
 
 
@@ -69,13 +69,13 @@ function ImageCardComponent(props) {
                             <Card.Footer >
                             <Col className=" col-12 pt-1" style={{ width: '100%'}}>
                                     <Row>
-                                        <Button onClick={() => markAsPrimary()} className="btn btn-primary">Primary</Button>
+                                        <Button onClick={() => markAsPrimary()} variant="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}>Primary</Button>
                                     </Row>
                                 </Col>
 
                                 <Col className=" col-12 pt-1">
                                     <Row>
-                                        <Button onClick={() => deleteImageById()} className="btn btn-danger">Delete</Button>
+                                        <Button onClick={() => deleteImageById()} className="btn btn-secondary">Delete</Button>
                                     </Row>
                                 </Col>
                             </Card.Footer>
