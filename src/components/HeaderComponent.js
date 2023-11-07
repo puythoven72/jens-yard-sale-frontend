@@ -10,7 +10,7 @@ function HeaderComponent() {
 
         <Navbar expand="lg" style={{backgroundColor:'#6b5e51'}}>
         <Container  style={{backgroundColor:'#F4DFB6'}}>
-          <Navbar.Brand href="/">JENS YARD SALE</Navbar.Brand>
+          <Navbar.Brand href="/">JENN'S VARAGE SALE</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">

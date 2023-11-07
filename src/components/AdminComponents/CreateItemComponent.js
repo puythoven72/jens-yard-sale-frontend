@@ -213,7 +213,7 @@ function CreateItemComponent() {
 
   function saveNewDropDownVal() {
     if (currentDropDownValue) {
-
+      console.log(currentDropDownValue + " IS VALUE")
      const updateVal =  Utility.formatProperCase(currentDropDownValue)
       var jsonArray = [];
       if (currentDropDownField === "category") {

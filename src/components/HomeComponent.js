@@ -18,7 +18,7 @@ function HomeComponent() {
 
       <Row>
       <Col className="d-flex justify-content-center" style={{ color: "#f0eeed" }}  >
-        <section>If Interested in any items send me an email to: Freeshit@aol.com</section>
+        <section>If Interested in any items send me an email to: stuff@aol.com</section>
         </Col>
       </Row>
 

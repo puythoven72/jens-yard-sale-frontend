@@ -27,7 +27,7 @@ function ImageCardComponent(props) {
             (res) => {
 
                 props.setItemImageUpdate(`delete-${iData.id}`)
-            }
+            } 
         ).catch((error) => { console.log(error); })
 
     }
