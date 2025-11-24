@@ -7,8 +7,9 @@ const SALES_STATUS_SELECT_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}
 const CONDITION_SELECT_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/200`;
 const CATEGORY_SELECT_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/300`;
 const CATEGORY_ADD_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/addNewCategory`;
+const DROPDOWN_DELETE_URL = ITEM_BASE_API_URL + `${DROP_DOWN_SELECTIONS_URL}/deleteSelection`;
 const IMAGE_ADMIN = ITEM_BASE_API_URL + "/image-admin";
-
+const AllITEMCATEGORIES = `${ITEM_BASE_API_URL}/getAllCategories`;
 
 
 
@@ -57,6 +58,11 @@ class ItemService {
     let auth_header = AuthServices.getAuthHeaders();
 
     return axios.get(SALES_STATUS_SELECT_URL,auth_header);
+  }
+
+  getAllSelections() {
+    let auth_header = AuthServices.getAuthHeaders();
+    return axios.get(ITEM_BASE_API_URL+DROP_DOWN_SELECTIONS_URL,auth_header);
   }
 
   getAllConditionSelections() {
@@ -110,6 +116,15 @@ class ItemService {
     //console.log(JSON.parse(dropDownSelection) + " Trying to add");
     return axios.post(CATEGORY_ADD_URL,dropDownSelection,auth_header);
 
+  }
+
+  deleteDropDownSelection(id){
+    let auth_header = AuthServices.getAuthHeaders();
+    return axios.delete(`${DROPDOWN_DELETE_URL}/${id}`,auth_header);
+  }
+
+  getAllCategories(){
+    return axios.get(AllITEMCATEGORIES);
   }
 
 }

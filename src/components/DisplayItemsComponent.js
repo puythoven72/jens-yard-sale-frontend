@@ -15,7 +15,8 @@ function DisplayItemsComponent() {
     //  setItems(response.data);
 
     getAllItems();
-    getAllCategories();
+   // getAllCategories();
+   //getAllCategories2();
     // console.log(response.data);
     // }).catch(error => { console.log(error) })
   }, [])
@@ -23,23 +24,60 @@ function DisplayItemsComponent() {
 
 
   async function getAllItems() {
-
     await ItemServices.getAllItems().then((response) => {
-
-      setItems(response.data)
+      setItems(response.data);
+      setCats(response.data);
       console.log(response.data);
     }).catch(error => { console.log(error) })
+  }
+
+  function setCats(allitems){
+    console.log("IN IT");
+    const cats = [{ "id": -1, "selectionValue": "All", "selectionType": 100 }];
+    for (const i of allitems) {
+      console.log(i.category + " XXX ")
+      if(i.saleStatus === "For Sale"){
+        cats.push({id: i.id, selectionValue: i.category, selectionType: 300})
+      }  
+    }
+    setAllCategories(cats);
+    console.log(JSON.stringify(cats) + " CATS");
   }
 
   async function getAllCategories() {
     await ItemServices.getAllCategorySelections()
       .then((response) => {
-        response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 300 })
+        response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
         setAllCategories(response.data);
-        console.log(JSON.stringify(response.data[0]) + " IS RESPONSE");
+       // console.log(JSON.stringify(response.data) + " IS REPONSEs");
       }).catch(error => { console.log(error) })
 
   }
+
+  async function getAllCategories1() {
+    await ItemServices.getAllCategories()
+      .then((response) => {
+        // response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
+        // setAllCategories(JSON.stringify(response.data[0]));
+        setAllCategories(response.data);
+        console.log(JSON.stringify(response.data) + " IS RESPONSE");
+      }).catch(error => { console.log(error) })
+
+  }
+
+  async function getAllCategories2() {
+    const names = [];
+    console.log(JSON.stringify(items) + "xxx");
+    for (const i of items) {
+      names.push(i.category);
+    }
+
+    console.log(JSON.stringify(names) + "CATS????");
+
+
+  }
+
+
 
   const setField = (field, value) => {
     console.log(value + " IS THE VALUE PASSED");
@@ -82,7 +120,7 @@ function DisplayItemsComponent() {
 
 
   return (
-    <Container style={{ backgroundColor: '#F4DFB6' }} >   
+    <Container style={{ backgroundColor: '#F4DFB6' }} className="defaultfontColor">
       <Row className="m-2 ">
         <Col>
           <Dropdown
@@ -90,26 +128,29 @@ function DisplayItemsComponent() {
             defaultval={"All"}
             setFieldStateValue={setField}
             form={form}
-
+            className="defaultfontColor"
             field={"category"}
           />
+
+
+
         </Col>
       </Row>
 
       <Row className="m-2">
-       <CardGroup> 
-        {
-          items.map((item) => {
+        <CardGroup>
+          {
+            items.map((item) => {
 
-            if (item.saleStatus === "For Sale")
-              return ( 
-                  <ItemCardComponent item={item} />      
-              )
-          })
-        }
+              if (item.saleStatus === "For Sale")
+                return (
+                  <ItemCardComponent item={item} />
+                )
+            })
+          }
         </CardGroup>
       </Row>
-      
+
 
     </Container>
 

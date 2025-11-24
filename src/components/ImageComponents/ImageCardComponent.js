@@ -82,20 +82,12 @@ function ImageCardComponent(props) {
                         </>
 
                     }
-
-
                 </Card.Body>
-
             </Card>
-
-
-          
         </Col>
 
 
     )
-
-
 }
 
 export default ImageCardComponent;

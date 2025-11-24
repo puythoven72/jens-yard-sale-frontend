@@ -8,26 +8,31 @@ function HomeComponent() {
 
   return (
 
-    <div fluid className="homeBanner " style={{ backgroundImage: `url(${yardBanner})` }}>
-      <Row  >
-        <Col className="pt-3 d-flex justify-content-center" style={{ color: "#f0eeed" }}  >
-          <strong>Welcome</strong>
-        </Col>
-       
-      </Row>
+    <div fluid className="homeBanner" style={{ backgroundImage: `url(${yardBanner})` }}>
+      <Container style={{ backgroundColor: '#F4DFB6' }}>
+        <Row >
+          <Row  >
+            <Col className=" d-flex justify-content-center"   >
+              <h3>
+                <strong className="">Welcome</strong>
+              </h3>
+            </Col>
 
-      <Row>
-      <Col className="d-flex justify-content-center" style={{ color: "#f0eeed" }}  >
-        <section>If Interested in any items send me an email to: stuff@aol.com</section>
-        </Col>
-      </Row>
+          </Row>
 
-      <hr class="mt-1"
-          style={{
+          <Row>
+            <Col className="d-flex justify-content-center "   >
+              <section>If Interested in any items send me an email to: stuff@aol.com</section>
+            </Col>
+          </Row>
 
-            backgroundColor: "#F4DFB6",
-            height: "2px"
-          }} />
+        </Row>
+
+      </Container>
+
+
+
+  
 
     </div>
 

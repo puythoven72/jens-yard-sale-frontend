@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { Link, useParams } from "react-router-dom";
 import ItemServices from "./services/ItemServices";
 import Utility from "./services/Utility";
-
+import "../App.css"
 
 
 function DisplayItemDetailsComponent() {
@@ -84,6 +84,15 @@ function DisplayItemDetailsComponent() {
         setDisplayImagesForItem(allImages);
     }
 
+    const Mailto = ({ email, subject = '', body = '', children }) => {
+        let params = subject || body ? '?' : '';
+        if (subject) params += `subject=${encodeURIComponent(subject)}`;
+        if (body) params += `${subject ? '&' : ''}body=${encodeURIComponent(body)}`;
+
+        return <a href={`mailto:${email}${params}`}>{children}</a>;
+    };
+
+
 
     return (
         <Container style={{ backgroundColor: '#F4DFB6' }} className="mb-2 " >
@@ -93,11 +102,11 @@ function DisplayItemDetailsComponent() {
                     primaryImageForItem.map((primaryItem) => {
                         let path = `../../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
                         return (
-                            
-                            <Col sm={8}>
+                            <Col sm={7}>
                                 <Card style={{ backgroundColor: '#f0eeed', color: "#AA422F" }}  >
-                                    <Card.Img variant="top" src={path} width="50%" height="50%" className="img-fluid" />
-
+                                    <div class="text-center">
+                                        <Card.Img variant="top" src={path} style={{ width: '25rem' }} className="img-thumbnail m-2" />
+                                    </div>
                                 </Card>
                             </Col>
                         )
@@ -105,13 +114,13 @@ function DisplayItemDetailsComponent() {
                 }
 
 
-                <Col sm={4} style={{ width: '25rem', backgroundColor: '#f0eeed', color: "#AA422F" }}  className=" d-flex flex-column justify-content-center fs-4"  >
+                <Col sm={5} style={{ width: '25rem', backgroundColor: '#f0eeed' }} className=" d-flex flex-column justify-content-center fs-5 img-thumbnail defaultfontColor"  >
                     <Row className="mt-2 ">
-                        <Col className="display-2" >
-                        <strong>   {item.name}</strong>
+                        <Col className="display-4" >
+                            <strong>{item.name}</strong>
                         </Col>
                     </Row>
-                   
+
                     <Row className="mt-2">
                         <Col>
                             <strong>Description:</strong>
@@ -145,8 +154,28 @@ function DisplayItemDetailsComponent() {
                             {Utility.formatCurrency(item.price)}
                         </Col>
                     </Row>
-                   
+                    <Row className="mt-2">
+                        <Col>
+                            <Mailto email="jensVarrage@gmail.com" subject={item.name} body={"Hello, Im interested in the " + item.name + "[" + item.id + "]"}  >
+                                <span className="defaultfontColor" style={{ textDecoration: "none" }}>  Interested? Mail me!</span>
+                            </Mailto>
+                        </Col>
+                    </Row>
+                    <Row className="pt-5">
+
+
+               
+                        <Link to={"/"} className="btn btn-secondary " >
+                            <span className="closeButton" >Back</span>
+                        </Link>
+                        
+                        
+
+                    </Row>
+
+
                 </Col>
+
             </Row>
 
 
@@ -158,13 +187,16 @@ function DisplayItemDetailsComponent() {
                         return (
                             <Card xs={12} sm={4} md={4} style={{ width: '10rem', backgroundColor: '#f0eeed', color: "#AA422F" }} onClick={e => { markAsPrimary(item) }} >
                                 <Card.Img src={path} width="100%" height="100%" className="img-thumbnail mt-1" />
-
+                                <Card.Footer>
+                                <span className="defaultfontColor"> <small>click to enlarge</small></span>
+                                </Card.Footer>
 
                             </Card>
                         )
                     })
                 }
             </Row>
+
 
         </Container>
 

@@ -2,33 +2,48 @@ import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import ItemServices from "../services/ItemServices";
-import { useNavigate } from "react-router-dom";
+
 import { Link, useParams } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
+import ListGroup from "react-bootstrap/ListGroup";
 import Dropdown from "../services/Dropdown";
-import "../../App.css"
-
-
-
-
-import Modal from 'react-bootstrap/Modal';
+import "../../App.css";
+import { useNavigate } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
 import Utility from "../services/Utility";
 
-
-
-
 function CreateItemComponent() {
+  const saveLabel = "Saved";
+  //const deleteLabel = "Deleted";
+  const categoryCode = Utility.getCategoryCode();
+  const conditionCode = Utility.getConditonCode();
+  //const salesStatusCode = Utility.getSalesStatusCode;
+
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
+  const [newSavedForm, setNewSavedForm] = useState(false);
 
   //used for options
+  const [allSelections, setAllSelections] = useState([]);
   const [allStatus, setAllStatus] = useState([]);
   const [allConditions, setAllConditions] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
 
-  const [currentDropDownField, setCurrentDropDownField] = useState("");
+
+
+  //used for catagry and condition modal
+  const [currentDropDownField, setCurrentDropDownField] = useState();
   const [currentDropDownValue, setCurrentDropDownValue] = useState("");
   const [show, setShow] = useState(false);
+
+  //used in save delete conformation modal
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const [showSaveConfirmCondition, setShowSaveConfirmCondition] =
+    useState(false);
+  const [confirmAction, setConfirmAction] = useState("");
+  const [confirmActionItem, setConfirmActionItem] = useState("");
+  const [showDeleteSelection, setShowDeleteSelection] = useState(false);
+
 
   const handleClose = () => {
     setCurrentDropDownField("");
@@ -36,11 +51,28 @@ function CreateItemComponent() {
     setShow(false);
   }
   const handleShow = (dropDownVal) => {
-    console.log(dropDownVal + " get the val")
+   // console.log(dropDownVal + " get the val")
     setCurrentDropDownField(dropDownVal);
     setShow(true);
   };
 
+  function handleCloseSaveConfirm() {
+    setShowSaveConfirm(false);
+    setShowSaveConfirmCondition(false);
+    setConfirmAction("");
+    setConfirmActionItem("");
+  }
+
+  function handleShowDeleteSelection(dropDownVal) {
+   // console.log(dropDownVal);
+    setCurrentDropDownField(dropDownVal);
+    setShowDeleteSelection(true);
+  }
+
+  function handleCloseDeleteSelection() {
+    setCurrentDropDownField();
+    setShowDeleteSelection(false);
+  }
 
 
   const navigate = useNavigate();
@@ -53,34 +85,75 @@ function CreateItemComponent() {
   const [imageUrl, setImageUrl] = useState(undefined);
   const [imgErrorMessage, setImgErrorMessage] = useState("");
 
+
+
+  //get categories from all Items
+  async function setCategories() {
+    const cats = [];
+    let seen = new Set();
+    await ItemServices.getAllItems()
+      .then((response) => {
+        let allitems = response.data;
+        for (const i of allitems) {
+          let categoryValue = i.category;
+          if (!seen.has(categoryValue)) {
+            seen.add(categoryValue);
+            cats.push({
+              id: i.id,
+              selectionValue: i.category,
+              selectionType: 300,
+            });
+          }
+        }
+        setAllCategories(cats);
+       // console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+
+
+    const sessionCategories = JSON.parse(sessionStorage.getItem("sessionCat"));
+    if (sessionCategories) {
+      setAllCategories(sessionCategories);
+    }
+  }
+
+  //get all  drop down values
   const options = async () => {
-    console.log("in options");
-    await ItemServices.getAllSalesStatusSelections()
-      .then((response) => {
-        setAllStatus(response.data);
-        console.log(response.data[0].salesStatus + " IS RESPONSE");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
 
-    await ItemServices.getAllConditionSelections()
+    let condList = [];
+    let selectionsList = [];
+    let salesStatusList = [];
+    await ItemServices.getAllSelections()
       .then((response) => {
-        setAllConditions(response.data);
-        console.log(response.data[0].salesStatus + " IS RESPONSE");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        setAllSelections(response.data);
+        response.data.map((x) => {
+          selectionsList.push(x);
+          switch (x.selectionType) {
+            case conditionCode:
+              condList.push(x);
+              break;
+            default:
+              salesStatusList.push(x);
+          }
+        });
+        setAllConditions(condList);
+        setAllStatus(salesStatusList);
 
-    await ItemServices.getAllCategorySelections()
-      .then((response) => {
-        setAllCategories(response.data);
-        console.log(response.data[0].salesStatus + " IS RESPONSE");
+        setCategories();
       })
       .catch((error) => {
         console.log(error);
       });
+  };
+
+  const addNewCondition = () => {
+    setAllCategories([
+      ...allCategories,
+      { id: -1, selectionValue: "All", selectionType: 100 },
+    ]);
   };
 
   async function getItemByID(id) {
@@ -108,16 +181,16 @@ function CreateItemComponent() {
       getItemByID(id);
       setItemId(id);
     }
-    options();
-  }, [currentDropDownField]);
 
+    options();
+  }, [currentDropDownField, showSaveConfirm]);
+  //currentDropDownField, showSaveConfirm
   const title = () => {
     if (id) {
       return "Update Item";
     }
     return "Add Item";
   };
-
 
   const imageButtonTitle = () => {
     if (id) {
@@ -126,9 +199,7 @@ function CreateItemComponent() {
     return "Add Images";
   };
 
-
   const setField = (field, value) => {
-
     setForm({
       ...form,
       [field]: value,
@@ -144,7 +215,7 @@ function CreateItemComponent() {
   const validateForm = () => {
     const { name, description, category, condition, price, saleStatus } = form;
     let newErrors = {};
-    console.log(form);
+   // console.log(form);
 
     if (!name) {
       newErrors.name = "Please Enter Item Name.";
@@ -183,7 +254,7 @@ function CreateItemComponent() {
       if (id) {
         ItemServices.updateItem(id, form)
           .then((res) => {
-            console.log(res.data);
+           // console.log(res.data);
             navigate("/admin");
           })
           .catch((err) => {
@@ -192,71 +263,91 @@ function CreateItemComponent() {
       } else {
         ItemServices.createItem(form)
           .then((res) => {
-            console.log(res.data);
+          //  console.log(res.data);
             setItemId(res.data.id);
-
+            setConfirmAction(saveLabel);
+            setConfirmActionItem(form.name);
+            setShowSaveConfirm(true);
+            setShowSaveConfirmCondition(true);
+            setNewSavedForm(true);
           })
           .catch((err) => {
             console.error(err);
           });
       }
+      sessionStorage.removeItem("sessionCat");
     }
   }
 
-
   function updateModalDropDownValue(addValue) {
-    console.log(currentDropDownField + " Is the current dropdown");
+   // console.log(currentDropDownField + " Is the current dropdown");
     setCurrentDropDownValue(addValue);
   }
 
+  async function deleteDropDownSelection(id) {
+    await ItemServices.deleteDropDownSelection(id)
+      .then((response) => { })
+      .catch((error) => {
+        console.log(error);
+      });
 
+    options();
 
-  function saveNewDropDownVal() {
-    if (currentDropDownValue) {
-      console.log(currentDropDownValue + " IS VALUE")
-     const updateVal =  Utility.formatProperCase(currentDropDownValue)
-      var jsonArray = [];
-      if (currentDropDownField === "category") {
-
-        var jsonObject = { selectionType: 300, selectionValue: updateVal };
-        jsonArray.push(jsonObject);
-
-      }
-      if (currentDropDownField === "condition") {
-        var jsonObject = { selectionType: 200, selectionValue: updateVal };
-        jsonArray.push(jsonObject);
-      }
-
-
-      ItemServices.addNewCategory(jsonObject).then((response) => {
-        console.log(response.data);
-      })
-        .catch((err) => {
-          console.log(err);
-        })
-    }
-
-
-
-
-    //    setCurrentDropDownField("");
-    //  setCurrentDropDownValue("");
-    handleClose();
   }
 
+  //function to add new categories or conditions to the drop downs
+  function saveNewDropDownVal() {
+    if (currentDropDownValue) {
+      setConfirmActionItem(currentDropDownValue);
+     // console.log(currentDropDownValue + " IS VALUE");
+      const updateVal = Utility.formatProperCase(currentDropDownValue);
+      var jsonArray = [];
+      if (currentDropDownField === categoryCode) {
+        const tempArray = [...allCategories, { selectionType: 300, selectionValue: updateVal },
+        ]
+        //store the categories in the session so when the page re loads we dont loose new categories
+        sessionStorage.setItem("sessionCat", JSON.stringify(tempArray));
+        setAllCategories([
+          ...allCategories,
+          { selectionType: 300, selectionValue: updateVal },
+        ]);
+
+      }
+      if (currentDropDownField === conditionCode) {
+        //have to get current Categories so when page refreshes we dont loose new categories
+        var jsonObject = { selectionType: 200, selectionValue: updateVal };
+        jsonArray.push(jsonObject);
+        ItemServices.addNewCategory(jsonObject)
+          .then((response) => {
+           // console.log(response.data);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    }
+    handleClose();
+    setShowSaveConfirm(true);
+    setConfirmAction(saveLabel);
+  }
 
   return (
     <div>
-      <br />
-      <br />
-      <Container style={{ backgroundColor: '#F4DFB6' }} >
+      <Container style={{ backgroundColor: "#F4DFB6" }}>
         <Row>
-          <div className="card col-md-6 offset-md-3 offset-md-3" style={{ backgroundColor: '#f0eeed', color:"#AA422F"}}>
-            <h2 className="text-center">{title()}</h2>
+          <div
+            className="card col-md-6 offset-md-3 offset-md-3"
+            style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}
+          >
+            <h2 className="text-center defaultfontColor  mt-2">{title()}</h2>
             <div className="card-body">
-              <Form controlId="price" >
+              <Form controlId="price">
                 <Form.Group controlId="name">
-                  <Form.Label>Item Name</Form.Label>
+                  <Form.Label>
+                    <span span className="defaultfontColor">
+                      Item Name
+                    </span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="Enter Item Name"
@@ -274,7 +365,11 @@ function CreateItemComponent() {
                 </Form.Group>
 
                 <Form.Group controlId="description">
-                  <Form.Label>Item Description</Form.Label>
+                  <Form.Label>
+                    <span span className="defaultfontColor">
+                      Item Description
+                    </span>
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="Enter Item Description"
@@ -292,7 +387,11 @@ function CreateItemComponent() {
                 </Form.Group>
 
                 <div className="form-group mb-2">
-                  <label className="form-label">Item Category</label>
+                  <label className="form-label">
+                    <span span className="defaultfontColor">
+                      Item Category
+                    </span>
+                  </label>
                   <Dropdown
                     options={allCategories}
                     defaultval={form.category}
@@ -300,13 +399,24 @@ function CreateItemComponent() {
                     form={form}
                     field={"category"}
                   />
-                <Button variant="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}  onClick={() => { handleShow("category") }}>
-                    Add Category
-                  </Button>
+                  <Row>
+                    <Button
+                      variant="btn mt-2"
+                      style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
+                      onClick={() => {
+                        handleShow(categoryCode);
+                        // addNewCondition(categoryCode);
+                      }}
+                    >
+                      Add Category
+                    </Button>
+                  </Row>
                 </div>
 
                 <div className="form-group mb-2">
-                  <label className="form-label">Item Condition</label>
+                  <label className="form-label defaultfontColor">
+                    Item Condition
+                  </label>
                   <Dropdown
                     options={allConditions}
                     defaultval={form.condition}
@@ -314,14 +424,34 @@ function CreateItemComponent() {
                     form={form}
                     field={"condition"}
                   />
-                  <Button variant="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}  onClick={() => { handleShow("condition") }}>
-                    Add Condition
-                  </Button>
+                  <Row>
+                    <Button
+                      variant="btn mt-2"
+                      style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
+                      onClick={() => {
+                        handleShow(conditionCode);
+                      }}
+                    >
+                      Add Condition
+                    </Button>
 
+                    <Button
+                      variant="btn mt-2"
+                      style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
+                      onClick={() => {
+                        handleShowDeleteSelection(conditionCode);
+                      }}
+                    >
+                      Delete Condition
+                    </Button>
+                  </Row>
                 </div>
 
-                <Form.Group >
-                  <Form.Label>Item Price</Form.Label>
+                <Form.Group>
+                  <Form.Label>
+                    {" "}
+                    <span className="defaultfontColor">Item Price</span>
+                  </Form.Label>
                   <Form.Control
                     type="number"
                     placeholder="Enter Item Price"
@@ -339,7 +469,9 @@ function CreateItemComponent() {
                 </Form.Group>
 
                 <div className="form-group mb-2">
-                  <label className="form-label">Item Sales Status</label>
+                  <label className="form-label defaultfontColor">
+                    Item Sales Status
+                  </label>
                   <Dropdown
                     options={allStatus}
                     defaultval={form.saleStatus}
@@ -353,9 +485,10 @@ function CreateItemComponent() {
                     <Row>
                       <Button
                         variant="btn "
-                        style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}
+                        style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
                         type="submit"
-                        onClick={saveUpdateItem}>
+                        onClick={saveUpdateItem}
+                      >
                         Save
                       </Button>
                     </Row>
@@ -365,29 +498,34 @@ function CreateItemComponent() {
                     {itemID ? (
                       <Col className="sm-4 col-md-12">
                         <Row>
-                          <Link to={`/admin/add-images/${itemID}`} className="btn " 
-                          style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}
+                          <Link
+                            to={`/admin/add-images/${itemID}`}
+                            className="btn "
+                            style={{
+                              backgroundColor: "#6b5e51",
+                              color: "#f0eeed",
+                            }}
                             state={{
                               from: "/admin/edit-item/" + { itemID },
-                              body: { form }
-                            }}>
+                              body: { form },
+                            }}
+                          >
                             {imageButtonTitle()}
                           </Link>
                         </Row>
                       </Col>
-                    ) : (
-                      null
-                    )}
+                    ) : null}
                   </div>
 
-
-                  <Col className=" col-12">
-                    <Row>
-                      <Link to={"/admin"} className="btn btn-secondary">
-                        Cancel
-                      </Link>
-                    </Row>
-                  </Col>
+                  {!newSavedForm ? (
+                    <Col className=" col-12">
+                      <Row>
+                        <Link to={"/admin"} className="btn btn-secondary">
+                          <span className="closeButton">Back</span>
+                        </Link>
+                      </Row>
+                    </Col>
+                  ) : null}
                 </div>
               </Form>
             </div>
@@ -395,19 +533,29 @@ function CreateItemComponent() {
         </Row>
       </Container>
 
+      {/* Modal window to collect new dropdown values for category and condition */}
 
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header
+          closeButton
+          style={{ backgroundColor: "#F4DFB6", color: "#AA422F" }}
+          className="defaultfontColor"
+        >
+          <Modal.Title>
 
-
-{/* Modal window to collect new dropdown values for category and condition */}
-
-      <Modal show={show} onHide={handleClose}  >
-        <Modal.Header closeButton style={{ backgroundColor: '#F4DFB6', color:"#AA422F" }}>
-          <Modal.Title >{currentDropDownField ? `Add ${currentDropDownField[0].toUpperCase() + currentDropDownField.slice(1)}` : ""}</Modal.Title>
+            {Utility.getSelectionType(currentDropDownField)}
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ backgroundColor: '#f0eeed', color:"#AA422F"}}>
-          <Form >
+        <Modal.Body style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}>
+          <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-              <Form.Label>{currentDropDownField ? currentDropDownField[0].toUpperCase() + currentDropDownField.slice(1) : ""}</Form.Label>
+              <Form.Label className="defaultfontColor">
+                {/* {currentDropDownField
+                  ? currentDropDownField[0].toUpperCase() +
+                  currentDropDownField.slice(1)
+                  : ""} */}
+                {Utility.getSelectionType(currentDropDownField)}
+              </Form.Label>
               <Form.Control
                 type="text"
                 onChange={(e) => {
@@ -417,23 +565,133 @@ function CreateItemComponent() {
                 autoFocus
               />
             </Form.Group>
-
           </Form>
         </Modal.Body>
-        <Modal.Footer style={{ backgroundColor: '#f0eeed' }}>
+        <Modal.Footer style={{ backgroundColor: "#f0eeed" }}>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            <span className="closeButton"> Close</span>
           </Button>
-          <Button  variant="btn" onClick={saveNewDropDownVal} style={{ backgroundColor: '#F4DFB6', color:"#AA422F" }} >  
-            Add {currentDropDownField ? `Add ${currentDropDownField[0].toUpperCase() + currentDropDownField.slice(1)}` : ""}
+
+          <Button
+            variant="btn"
+            onClick={saveNewDropDownVal}
+            style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
+          >
+            
+            Add {Utility.getSelectionType(currentDropDownField)}
           </Button>
         </Modal.Footer>
       </Modal>
 
+      {/* Modal window to let user know action successful */}
+      <Modal
+        show={showSaveConfirmCondition}
+        onHide={handleCloseSaveConfirm}
+        size="lg"
+        centered
+      >
+        <Modal.Header
+          closeButton
+          style={{ backgroundColor: "#F4DFB6", color: "#AA422F" }}
+          className="defaultfontColor"
+        >
+          <Modal.Title id="contained-modal-title-vcenter">
+            {confirmAction}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}>
+          <p>
+            {Utility.formatProperCase(confirmActionItem)} has been succesfully{" "}
+            {confirmAction.toLowerCase()}.
+          </p>
+        </Modal.Body>
+        <Modal.Footer style={{ backgroundColor: "#f0eeed" }}>
+          <Button variant="secondary" onClick={handleCloseSaveConfirm}>
+            <span className="closeButton"> Close</span>
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
+      <Modal
+        show={showSaveConfirm}
+        onHide={handleCloseSaveConfirm}
+        size="lg"
+        centered
+      >
+        <Modal.Header
+          closeButton
+          style={{ backgroundColor: "#F4DFB6", color: "#AA422F" }}
+          className="defaultfontColor"
+        >
+          <Modal.Title id="contained-modal-title-vcenter">
+            {confirmAction}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}>
+          <p>
+            {Utility.formatProperCase(confirmActionItem)} has been succesfully{" "}
+            {confirmAction.toLowerCase()}.
+          </p>
+        </Modal.Body>
+        <Modal.Footer style={{ backgroundColor: "#f0eeed" }}>
+          <Button variant="secondary" onClick={handleCloseSaveConfirm}>
+            <span className="closeButton"> Close</span>
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
+      {/* Modal window to delete dropdown selections */}
+      <Modal
+        show={showDeleteSelection}
+        onHide={handleCloseDeleteSelection}
+        size="lg"
+        centered
+      >
+        <Modal.Header
+          closeButton
+          style={{ backgroundColor: "#F4DFB6", color: "#AA422F" }}
+          className="defaultfontColor"
+        >
+          <Modal.Title id="contained-modal-title-vcenter">Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}>
+          <p>
+            {Utility.getSelectionType(currentDropDownField)}
+            <ListGroup>
+              {allSelections.map((category) => {
+                if (category.selectionType === currentDropDownField) {
+                  return (
+                    <ListGroup.Item>
+                      <Row>
+                        <Col>{category.selectionValue}</Col>
+                        <Col className="d-flex justify-content-end">
+                          <Button
+                            onClick={() => {
+                              deleteDropDownSelection(category.id);
+                            }}
+                            style={{
+                              backgroundColor: "#6b5e51",
+                              color: "#f0eeed",
+                            }}
+                          >
+                            Delete
+                          </Button>
+                        </Col>
+                      </Row>
+                    </ListGroup.Item>
+                  );
+                }
+              })}
+            </ListGroup>
+          </p>
+        </Modal.Body>
+        <Modal.Footer style={{ backgroundColor: "#f0eeed" }}>
+          <Button variant="secondary" onClick={handleCloseDeleteSelection}>
+            <span className="closeButton"> Close</span>
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
-
 export default CreateItemComponent;

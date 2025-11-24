@@ -1,5 +1,10 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Monoton&family=Spicy+Rice&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Monoton&family=Roboto:ital,wght@1,500&family=Spicy+Rice&family=Titillium+Web:wght@400&display=swap');
+
 .App {
     text-align: center;
+    
   }
 
 
@@ -30,20 +35,55 @@ color: darkgrey;
 }
 
 .homeBanner{
-    background-color: #8FA59F;
-    color: white;
+     font-family: 'Spicy Rice', serif; 
+    font-size: large;
+    color: #CC5A2A;
     width: 100%;
     height: 120px;
+    background-color:#F4DFB6 ;
 }
 
 
+.headerStyle{
+    font-family: 'Spicy Rice', serif; 
+    color: #CC5A2A;
+    
+}
+
+
+.defaultfontColor{
+    font-family: 'Titillium Web', sans-serif;
+    color: #CC5A2A;
+}
+
+.closeButton{
+    /* font-family: 'Spicy Rice', serif; */
+    font-family: 'Titillium Web', sans-serif;
+}
+
+.actionButton{
+    background: #6b5e51;
+    color: #CC5A2A;
+}
+
+.navButtons{
+
+}
+
 .navigationBar{
+    
     background-color:  #6b5e51;
 }
 
 .button{
     background-color: #F4DFB6;
     color: #AA422F
-    
-
 }
+.navBarBrand{
+    font-family: 'Monoton', sans-serif;
+    font-size:larger;
+    color: #CC5A2A;
+    font-weight:500;
+}
+
+

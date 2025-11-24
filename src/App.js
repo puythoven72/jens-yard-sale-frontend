@@ -24,23 +24,22 @@ function App() {
       <Container style={{ backgroundColor: '#6b5e51' }}>
         <Router>
           <Routes>
-            <Route element={<PrivateRoutes />}>
-              <Route path="/admin" element={<ListItemsComponent />} />
-              <Route path="/admin/add-item" element={<CreateItemComponent />} />
-              <Route path="/admin/edit-item/:id" element={<CreateItemComponent />} />
-              <Route path="/admin/add-images/:id" element={<AddImagesComponent />} />
-
-            </Route>
+         
             {/* <Route path="/admin" element={<ListItemsComponent />} />
             <Route path="/admin/add-item" element={<CreateItemComponent />} />
             <Route path="/admin/edit-item/:id" element={<CreateItemComponent />} />
             <Route path="/admin/add-images/:id" element={<AddImagesComponent />} /> */}
+           
 
             <Route path="/" element={<DisplayItemsComponent />} />
             <Route path="/displayItem" element={<DisplayItemDetailsComponent />} />
             <Route path="/user/login" element={<LoginComponent />} />
             <Route path="/user/register" element={<RegisterComponent />} />
             <Route path="/test" element={<Test/>} />
+
+            <Route path="/admin" element={<ListItemsComponent />}/>
+            <Route path="/admin/edit-item/:id" element={<CreateItemComponent />} />
+            <Route path="/admin/add-images/:id" element={<AddImagesComponent />} />
           </Routes>
         </Router>
       </Container>

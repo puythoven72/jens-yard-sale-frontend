@@ -44,13 +44,12 @@ function ListItemsComponent() {
         ItemServices.getAllItems().then((response) => {
             setItems(response.data)
             console.log(response.data);
-            console.log("FINISHING GETTING ITEMS");
         }).catch(error => { console.log(error) })
     }
 
 
     function deleteItem(id) {
-        console.log(`the id is ${id}`)
+        
         ItemServices.deleteItemById(id).then(
             (response) => {
                 console.log(response.data);
@@ -114,7 +113,7 @@ function ListItemsComponent() {
                         {
                             items.map(item =>
                                 <tr key={item.id}>
-                                    <td>{item.name} {item.id}</td>
+                                    <td>{item.name} [{item.id}]</td>
                                     <td>{item.description}</td>
                                     <td>{item.category}</td>
                                     <td>{item.condition}</td>
@@ -175,23 +174,13 @@ function ListItemsComponent() {
                                     }
                                 </tr>
 
-
                             )
                         }
                     </tbody>
-
-
                 </table>
-
             </div>
-
-
-
         </div >
-
     )
-
-
 
 }
 

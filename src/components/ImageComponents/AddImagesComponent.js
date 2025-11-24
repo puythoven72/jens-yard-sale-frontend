@@ -4,9 +4,9 @@ import ItemServices from "../services/ItemServices";
 import { useEffect, useState } from "react";
 import ImageUploadComponent from "./ImageUploadComponent";
 import ImageCardComponent from "./ImageCardComponent";
-
-
-import { useLocation } from 'react-router-dom';
+import Button from "react-bootstrap/Button";
+import Modal from 'react-bootstrap/Modal';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 
 
@@ -22,6 +22,11 @@ function AddImagesComponent(props) {
   const [itemImageUpdate, setItemImageUpdate] = useState("");
   const [itemData, setItemData] = useState({});
   const [editItemPage, setEditItemPage] = useState("");
+  const navigate = useNavigate();
+
+  //used for modal window to check for primary
+  const [show, setShow] = useState(false);
+
 
   const location = useLocation()
 
@@ -29,13 +34,7 @@ function AddImagesComponent(props) {
   const getItemImages = async () => {
     if (id) {
       await ItemServices.getAllItemImages(id).then((res) => {
-        //console.log(JSON.stringify(res.data) + " PATH");
-        //  setImagesForItem(res.data);
-        // parsePrimaryImage(JSON.stringify(res.data));
-        //  console.log(JSON.stringify(res.data) + " DATA ");
         parsePrimaryImage(res.data);
-        //  setUploadProgress("getUpLoad");
-
       }
       )
     }
@@ -43,7 +42,7 @@ function AddImagesComponent(props) {
 
 
   function parsePrimaryImage(data) {
-    // let data = JSON.parse(jsonData);
+  
     console.log(JSON.stringify(data) + " IS DATA");
     data.filter((element) => {
       if (element.primary) {
@@ -54,13 +53,10 @@ function AddImagesComponent(props) {
         if (index >= 0) {
           data.splice(index, 1);
         }
-
         setPrimaryImageForItem([element]);
-
       }
     })
     setImagesForItem(data);
-
   }
 
 
@@ -90,8 +86,6 @@ function AddImagesComponent(props) {
       case "uploaded":
 
         return <ImageUploadComponent onImageChange={onImageChange} itemData={itemData} />;
-
-
 
       case "uploadError":
         return (
@@ -158,20 +152,28 @@ function AddImagesComponent(props) {
     return new Blob([ia], { type: mimeString });
   }
 
+  const handleClose = () => {
+    setShow(false);
+  }
 
-
-
+  function primaryCheck() {
+    if (primaryImageForItem.length === 0) {
+      setShow(true);
+    } else {
+      navigate("/admin");
+    }
+  }
 
 
   return (
 
-    <div className="card col-md-6 offset-md-3 offset-md-3"  style={{ backgroundColor: '#F4DFB6' }}>
-   
+    <div className="card col-md-6 offset-md-3 offset-md-3" style={{ backgroundColor: '#F4DFB6' }}>
+
 
       {content()}
 
 
-      <Container  style={{ backgroundColor: '#F4DFB6' }} >
+      <Container style={{ backgroundColor: '#F4DFB6' }} >
 
         <Row className="justify-content-center">
           {
@@ -199,31 +201,65 @@ function AddImagesComponent(props) {
           }
         </Row>
 
-       
+
 
 
         <Row className="mt-2">
           <Col className=" col-12">
             <Row>
-              <Link to={"/admin"} className="btn" style={{ backgroundColor: '#6b5e51', color:"#f0eeed" }}>
+              <Button variant="btn" style={{ backgroundColor: '#6b5e51', color: "#f0eeed" }} onClick={primaryCheck}>Done</Button>
+              {/* <Link to={"/admin"} className="btn" style={{ backgroundColor: '#6b5e51', color: "#f0eeed" }}>
                 Done
-              </Link>
+              </Link> */}
             </Row>
           </Col>
         </Row>
-        <Row className="mt-2">
-          <Col className=" col-12">
-            <Row>
-              <Link to={`/admin/edit-item/${id}`} className="btn btn-secondary">
-                Cancel
-              </Link>
-            </Row>
-          </Col>
-        </Row>
+        {imagesForItem.length === 0 ?
+          
+          <Row className="mt-2">
+            <Col className=" col-12">
+              <Row>
+                <Link to={`/admin/edit-item/${id}`} className="btn btn-secondary">
+                  Back
+                </Link>
+              </Row>
+            </Col>
+          </Row>
+         : null
+
+        }
+
 
 
 
       </Container>
+
+
+
+
+
+
+      <Modal
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        show={show} onHide={handleClose}  >
+        <Modal.Header closeButton style={{ backgroundColor: '#F4DFB6', color: "#AA422F" }} className="defaultfontColor">
+          <Modal.Title id="contained-modal-title-vcenter">
+            Choose Primary Image
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ backgroundColor: '#f0eeed', color: "#AA422F" }}>
+          <h5>No Primary Image has been selected for this item</h5>
+          <p>
+            You must choose a primary image for this item.
+          </p>
+        </Modal.Body>
+        <Modal.Footer style={{ backgroundColor: '#f0eeed' }}>
+          < Button variant="secondary" onClick={handleClose}>
+            <span className="closeButton" > Close</span>
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
     </div>
 

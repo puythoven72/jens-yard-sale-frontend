@@ -1,8 +1,39 @@
 
 
 class Utility {
+
+
   formatDate(date) {
     return new Date(date).toLocaleDateString()
+  }
+
+  getCategoryCode() {
+    return 300;
+  }
+
+  getConditonCode() {
+    return 200;
+  }
+  getSalesStatusCode() {
+    return 100;
+  }
+
+
+  getSelectionType(code) {
+    
+    switch (code) {
+      case (this.getCategoryCode()):
+        return "Category";
+        break;
+      case Number(this.getConditonCode()):
+        return "Condition";
+        break;
+
+      default:
+        console.log("not fuond");
+        return "Sales Status";
+
+    }
   }
 
 
@@ -27,7 +58,9 @@ class Utility {
     return result;
   }
 
+  getSelectionHeader() {
 
+  }
 
 
   setFormField = (field, value, setForm, form, setErrors, errors) => {
