@@ -20,7 +20,6 @@ function DisplayItemDetailsComponent() {
     useEffect(() => {
         if (primaryImageForItem.length === 0) {
             getItemImages();
-
         }
 
     }, [primaryImageForItem]);
@@ -162,17 +161,12 @@ function DisplayItemDetailsComponent() {
                         </Col>
                     </Row>
                     <Row className="pt-5">
-
-
                
                         <Link to={"/"} className="btn btn-secondary " >
                             <span className="closeButton" >Back</span>
                         </Link>
-                        
-                        
 
                     </Row>
-
 
                 </Col>
 

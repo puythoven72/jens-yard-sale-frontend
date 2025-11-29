@@ -30,8 +30,6 @@ class ItemService {
 
   getItemById(id) {   
     let auth_header = AuthServices.getAuthHeaders();
-    console.log(auth_header);
-
     return axios.get(ITEM_BASE_API_URL + "/" + id,auth_header
 
     );
@@ -67,7 +65,14 @@ class ItemService {
 
   getAllConditionSelections() {
     let auth_header = AuthServices.getAuthHeaders();
-    return axios.get(CONDITION_SELECT_URL,auth_header);
+    if(auth_header!=null){
+      return axios.get(CONDITION_SELECT_URL,auth_header);
+    }
+    else{
+      console.log("Whats going on")
+      return axios.get(ITEM_BASE_API_URL);
+    }
+    
   }
 
   getAllCategorySelections() {

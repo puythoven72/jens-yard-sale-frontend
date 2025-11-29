@@ -15,8 +15,8 @@ function DisplayItemsComponent() {
     //  setItems(response.data);
 
     getAllItems();
-   // getAllCategories();
-   //getAllCategories2();
+    // getAllCategories();
+    //getAllCategories2();
     // console.log(response.data);
     // }).catch(error => { console.log(error) })
   }, [])
@@ -31,14 +31,16 @@ function DisplayItemsComponent() {
     }).catch(error => { console.log(error) })
   }
 
-  function setCats(allitems){
-    console.log("IN IT");
+  function setCats(allitems) {
     const cats = [{ "id": -1, "selectionValue": "All", "selectionType": 100 }];
     for (const i of allitems) {
-      console.log(i.category + " XXX ")
-      if(i.saleStatus === "For Sale"){
-        cats.push({id: i.id, selectionValue: i.category, selectionType: 300})
-      }  
+      if (i.saleStatus === "For Sale") {
+        console.log(JSON.stringify(cats) + " cats")
+        const containsValue = cats.some(item => item.selectionValue === i.category);
+        if (!containsValue) {
+          cats.push({ id: i.id, selectionValue: i.category, selectionType: 300 })
+        }
+      }
     }
     setAllCategories(cats);
     console.log(JSON.stringify(cats) + " CATS");
@@ -49,7 +51,7 @@ function DisplayItemsComponent() {
       .then((response) => {
         response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
         setAllCategories(response.data);
-       // console.log(JSON.stringify(response.data) + " IS REPONSEs");
+        // console.log(JSON.stringify(response.data) + " IS REPONSEs");
       }).catch(error => { console.log(error) })
 
   }
@@ -60,7 +62,6 @@ function DisplayItemsComponent() {
         // response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
         // setAllCategories(JSON.stringify(response.data[0]));
         setAllCategories(response.data);
-        console.log(JSON.stringify(response.data) + " IS RESPONSE");
       }).catch(error => { console.log(error) })
 
   }

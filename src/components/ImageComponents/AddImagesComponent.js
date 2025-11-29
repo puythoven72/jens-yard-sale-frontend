@@ -228,13 +228,7 @@ function AddImagesComponent(props) {
          : null
 
         }
-
-
-
-
       </Container>
-
-
 
 
 

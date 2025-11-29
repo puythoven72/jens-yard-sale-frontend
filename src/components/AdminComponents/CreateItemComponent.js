@@ -12,13 +12,15 @@ import { useNavigate } from "react-router-dom";
 import Modal from "react-bootstrap/Modal";
 import Utility from "../services/Utility";
 
+import ImageCardComponent from "../ImageComponents/ImageCardComponent";
+
 function CreateItemComponent() {
   const saveLabel = "Saved";
   //const deleteLabel = "Deleted";
   const categoryCode = Utility.getCategoryCode();
   const conditionCode = Utility.getConditonCode();
   //const salesStatusCode = Utility.getSalesStatusCode;
-
+  const [primaryImageForItem, setPrimaryImageForItem] = useState([]);
   const [form, setForm] = useState({});
   const [errors, setErrors] = useState({});
   const [newSavedForm, setNewSavedForm] = useState(false);
@@ -28,8 +30,6 @@ function CreateItemComponent() {
   const [allStatus, setAllStatus] = useState([]);
   const [allConditions, setAllConditions] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
-
-
 
   //used for catagry and condition modal
   const [currentDropDownField, setCurrentDropDownField] = useState();
@@ -44,14 +44,15 @@ function CreateItemComponent() {
   const [confirmActionItem, setConfirmActionItem] = useState("");
   const [showDeleteSelection, setShowDeleteSelection] = useState(false);
 
+  const [itemImageUpdate, setItemImageUpdate] = useState("");
 
   const handleClose = () => {
     setCurrentDropDownField("");
     setCurrentDropDownValue("");
     setShow(false);
-  }
+  };
   const handleShow = (dropDownVal) => {
-   // console.log(dropDownVal + " get the val")
+    // console.log(dropDownVal + " get the val")
     setCurrentDropDownField(dropDownVal);
     setShow(true);
   };
@@ -64,7 +65,7 @@ function CreateItemComponent() {
   }
 
   function handleShowDeleteSelection(dropDownVal) {
-   // console.log(dropDownVal);
+    // console.log(dropDownVal);
     setCurrentDropDownField(dropDownVal);
     setShowDeleteSelection(true);
   }
@@ -73,7 +74,6 @@ function CreateItemComponent() {
     setCurrentDropDownField();
     setShowDeleteSelection(false);
   }
-
 
   const navigate = useNavigate();
   //id passed in from item list for updates
@@ -85,7 +85,30 @@ function CreateItemComponent() {
   const [imageUrl, setImageUrl] = useState(undefined);
   const [imgErrorMessage, setImgErrorMessage] = useState("");
 
+  const getItemImages = async () => {
+    if (id) {
+      await ItemServices.getAllItemImages(id).then((res) => {
+        parsePrimaryImage(res.data);
+      });
+    }
+  };
 
+  function parsePrimaryImage(data) {
+    console.log(JSON.stringify(data) + " IS DATA");
+    data.filter((element) => {
+      if (element.primary) {
+        console.log(JSON.stringify(element) + " E ");
+        let index = data.indexOf(element);
+        console.log(data.indexOf(element) + " PRIME ");
+        // remove the primary from the list
+        if (index >= 0) {
+          data.splice(index, 1);
+        }
+        setPrimaryImageForItem([element]);
+      }
+    });
+    // setImagesForItem(data);
+  }
 
   //get categories from all Items
   async function setCategories() {
@@ -106,13 +129,11 @@ function CreateItemComponent() {
           }
         }
         setAllCategories(cats);
-       // console.log(response.data);
+        // console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
       });
-
-
 
     const sessionCategories = JSON.parse(sessionStorage.getItem("sessionCat"));
     if (sessionCategories) {
@@ -122,7 +143,6 @@ function CreateItemComponent() {
 
   //get all  drop down values
   const options = async () => {
-
     let condList = [];
     let selectionsList = [];
     let salesStatusList = [];
@@ -180,6 +200,7 @@ function CreateItemComponent() {
     if (id) {
       getItemByID(id);
       setItemId(id);
+      getItemImages();
     }
 
     options();
@@ -215,7 +236,7 @@ function CreateItemComponent() {
   const validateForm = () => {
     const { name, description, category, condition, price, saleStatus } = form;
     let newErrors = {};
-   // console.log(form);
+    // console.log(form);
 
     if (!name) {
       newErrors.name = "Please Enter Item Name.";
@@ -254,8 +275,11 @@ function CreateItemComponent() {
       if (id) {
         ItemServices.updateItem(id, form)
           .then((res) => {
-           // console.log(res.data);
-            navigate("/admin");
+            // console.log(res.data);
+           // navigate("/admin");
+            setShowSaveConfirm(true);
+            setConfirmActionItem("Item")
+    setConfirmAction(saveLabel);
           })
           .catch((err) => {
             console.error(err);
@@ -263,7 +287,7 @@ function CreateItemComponent() {
       } else {
         ItemServices.createItem(form)
           .then((res) => {
-          //  console.log(res.data);
+            //  console.log(res.data);
             setItemId(res.data.id);
             setConfirmAction(saveLabel);
             setConfirmActionItem(form.name);
@@ -280,7 +304,7 @@ function CreateItemComponent() {
   }
 
   function updateModalDropDownValue(addValue) {
-   // console.log(currentDropDownField + " Is the current dropdown");
+    // console.log(currentDropDownField + " Is the current dropdown");
     setCurrentDropDownValue(addValue);
   }
 
@@ -292,26 +316,26 @@ function CreateItemComponent() {
       });
 
     options();
-
   }
 
   //function to add new categories or conditions to the drop downs
   function saveNewDropDownVal() {
     if (currentDropDownValue) {
       setConfirmActionItem(currentDropDownValue);
-     // console.log(currentDropDownValue + " IS VALUE");
+      // console.log(currentDropDownValue + " IS VALUE");
       const updateVal = Utility.formatProperCase(currentDropDownValue);
       var jsonArray = [];
       if (currentDropDownField === categoryCode) {
-        const tempArray = [...allCategories, { selectionType: 300, selectionValue: updateVal },
-        ]
+        const tempArray = [
+          ...allCategories,
+          { selectionType: 300, selectionValue: updateVal },
+        ];
         //store the categories in the session so when the page re loads we dont loose new categories
         sessionStorage.setItem("sessionCat", JSON.stringify(tempArray));
         setAllCategories([
           ...allCategories,
           { selectionType: 300, selectionValue: updateVal },
         ]);
-
       }
       if (currentDropDownField === conditionCode) {
         //have to get current Categories so when page refreshes we dont loose new categories
@@ -319,7 +343,7 @@ function CreateItemComponent() {
         jsonArray.push(jsonObject);
         ItemServices.addNewCategory(jsonObject)
           .then((response) => {
-           // console.log(response.data);
+            // console.log(response.data);
           })
           .catch((err) => {
             console.log(err);
@@ -335,214 +359,249 @@ function CreateItemComponent() {
     <div>
       <Container style={{ backgroundColor: "#F4DFB6" }}>
         <Row>
-          <div
-            className="card col-md-6 offset-md-3 offset-md-3"
-            style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}
-          >
-            <h2 className="text-center defaultfontColor  mt-2">{title()}</h2>
-            <div className="card-body">
-              <Form controlId="price">
-                <Form.Group controlId="name">
-                  <Form.Label>
-                    <span span className="defaultfontColor">
-                      Item Name
-                    </span>
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Item Name"
-                    onChange={(e) => {
-                      setField("name", e.target.value);
-                    }}
-                    value={form.name}
-                    defaultValue={""}
-                    isInvalid={!!errors.name}
-                  />
 
-                  <Form.Control.Feedback type="invalid">
-                    {errors.name}
-                  </Form.Control.Feedback>
-                </Form.Group>
-
-                <Form.Group controlId="description">
-                  <Form.Label>
-                    <span span className="defaultfontColor">
-                      Item Description
-                    </span>
-                  </Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter Item Description"
-                    onChange={(e) => {
-                      setField("description", e.target.value);
-                    }}
-                    value={form.description}
-                    defaultValue={""}
-                    isInvalid={!!errors.description}
-                  />
-
-                  <Form.Control.Feedback type="invalid">
-                    {errors.description}
-                  </Form.Control.Feedback>
-                </Form.Group>
-
-                <div className="form-group mb-2">
-                  <label className="form-label">
-                    <span span className="defaultfontColor">
-                      Item Category
-                    </span>
-                  </label>
-                  <Dropdown
-                    options={allCategories}
-                    defaultval={form.category}
-                    setFieldStateValue={setField}
-                    form={form}
-                    field={"category"}
-                  />
-                  <Row>
-                    <Button
-                      variant="btn mt-2"
-                      style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
-                      onClick={() => {
-                        handleShow(categoryCode);
-                        // addNewCondition(categoryCode);
+          <Col>
+            <div
+              className="card col-md-6 offset-md-3 offset-md-3"
+              style={{ backgroundColor: "#f0eeed", color: "#AA422F" }}
+            >
+              <h2 className="text-center defaultfontColor  mt-2">{title()}</h2>
+              <div className="card-body">
+                <Form controlId="price">
+                  <Form.Group controlId="name">
+                    <Form.Label>
+                      <span span className="defaultfontColor">
+                        Item Name
+                      </span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter Item Name"
+                      onChange={(e) => {
+                        setField("name", e.target.value);
                       }}
-                    >
-                      Add Category
-                    </Button>
-                  </Row>
-                </div>
+                      value={form.name}
+                      defaultValue={""}
+                      isInvalid={!!errors.name}
+                    />
 
-                <div className="form-group mb-2">
-                  <label className="form-label defaultfontColor">
-                    Item Condition
-                  </label>
-                  <Dropdown
-                    options={allConditions}
-                    defaultval={form.condition}
-                    setFieldStateValue={setField}
-                    form={form}
-                    field={"condition"}
-                  />
-                  <Row>
-                    <Button
-                      variant="btn mt-2"
-                      style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
-                      onClick={() => {
-                        handleShow(conditionCode);
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+
+                  <Form.Group controlId="description">
+                    <Form.Label>
+                      <span span className="defaultfontColor">
+                        Item Description
+                      </span>
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter Item Description"
+                      onChange={(e) => {
+                        setField("description", e.target.value);
                       }}
-                    >
-                      Add Condition
-                    </Button>
+                      value={form.description}
+                      defaultValue={""}
+                      isInvalid={!!errors.description}
+                    />
 
-                    <Button
-                      variant="btn mt-2"
-                      style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
-                      onClick={() => {
-                        handleShowDeleteSelection(conditionCode);
-                      }}
-                    >
-                      Delete Condition
-                    </Button>
-                  </Row>
-                </div>
+                    <Form.Control.Feedback type="invalid">
+                      {errors.description}
+                    </Form.Control.Feedback>
+                  </Form.Group>
 
-                <Form.Group>
-                  <Form.Label>
-                    {" "}
-                    <span className="defaultfontColor">Item Price</span>
-                  </Form.Label>
-                  <Form.Control
-                    type="number"
-                    placeholder="Enter Item Price"
-                    onChange={(e) => {
-                      setField("price", e.target.value);
-                    }}
-                    value={form.price}
-                    defaultValue={0}
-                    isInvalid={!!errors.price}
-                  />
-
-                  <Form.Control.Feedback type="invalid">
-                    {errors.price}
-                  </Form.Control.Feedback>
-                </Form.Group>
-
-                <div className="form-group mb-2">
-                  <label className="form-label defaultfontColor">
-                    Item Sales Status
-                  </label>
-                  <Dropdown
-                    options={allStatus}
-                    defaultval={form.saleStatus}
-                    setFieldStateValue={setField}
-                    form={form}
-                    field={"saleStatus"}
-                  />
-                </div>
-                <div className="row gy-2">
-                  <Col className="sm-4 col-md-12">
+                  <div className="form-group mb-2">
+                    <label className="form-label">
+                      <span span className="defaultfontColor">
+                        Item Category
+                      </span>
+                    </label>
+                    <Dropdown
+                      options={allCategories}
+                      defaultval={form.category}
+                      setFieldStateValue={setField}
+                      form={form}
+                      field={"category"}
+                    />
                     <Row>
                       <Button
-                        variant="btn "
+                        variant="btn mt-2"
                         style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
-                        type="submit"
-                        onClick={saveUpdateItem}
+                        onClick={() => {
+                          handleShow(categoryCode);
+                          // addNewCondition(categoryCode);
+                        }}
                       >
-                        Save
+                        Add Category
                       </Button>
                     </Row>
-                  </Col>
-
-                  <div>
-                    {itemID ? (
-                      <Col className="sm-4 col-md-12">
-                        <Row>
-                          <Link
-                            to={`/admin/add-images/${itemID}`}
-                            className="btn "
-                            style={{
-                              backgroundColor: "#6b5e51",
-                              color: "#f0eeed",
-                            }}
-                            state={{
-                              from: "/admin/edit-item/" + { itemID },
-                              body: { form },
-                            }}
-                          >
-                            {imageButtonTitle()}
-                          </Link>
-                        </Row>
-                      </Col>
-                    ) : null}
                   </div>
 
-                  {!newSavedForm ? (
-                    <Col className=" col-12">
+                  <div className="form-group mb-2">
+                    <label className="form-label defaultfontColor">
+                      Item Condition
+                    </label>
+                    <Dropdown
+                      options={allConditions}
+                      defaultval={form.condition}
+                      setFieldStateValue={setField}
+                      form={form}
+                      field={"condition"}
+                    />
+                    <Row>
+                      <Button
+                        variant="btn mt-2"
+                        style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
+                        onClick={() => {
+                          handleShow(conditionCode);
+                        }}
+                      >
+                        Add Condition
+                      </Button>
+
+                      <Button
+                        variant="btn mt-2"
+                        style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
+                        onClick={() => {
+                          handleShowDeleteSelection(conditionCode);
+                        }}
+                      >
+                        Delete Condition
+                      </Button>
+                    </Row>
+                  </div>
+
+                  <Form.Group>
+                    <Form.Label>
+                      {" "}
+                      <span className="defaultfontColor">Item Price</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="number"
+                      placeholder="Enter Item Price"
+                      onChange={(e) => {
+                        setField("price", e.target.value);
+                      }}
+                      value={form.price}
+                      defaultValue={0}
+                      isInvalid={!!errors.price}
+                    />
+
+                    <Form.Control.Feedback type="invalid">
+                      {errors.price}
+                    </Form.Control.Feedback>
+                  </Form.Group>
+
+                  <div className="form-group mb-2">
+                    <label className="form-label defaultfontColor">
+                      Item Sales Status
+                    </label>
+                    <Dropdown
+                      options={allStatus}
+                      defaultval={form.saleStatus}
+                      setFieldStateValue={setField}
+                      form={form}
+                      field={"saleStatus"}
+                    />
+                  </div>
+                  <div className="row gy-2">
+                    <Col className="sm-4 col-md-12">
                       <Row>
-                        <Link to={"/admin"} className="btn btn-secondary">
-                          <span className="closeButton">Back</span>
-                        </Link>
+                        <Button
+                          variant="btn "
+                          style={{
+                            backgroundColor: "#6b5e51",
+                            color: "#f0eeed",
+                          }}
+                          type="button"
+                          onClick={saveUpdateItem}
+                        >
+                          Save
+                        </Button>
                       </Row>
                     </Col>
-                  ) : null}
-                </div>
-              </Form>
+
+
+
+
+                  </div>
+                </Form>
+              </div>
             </div>
-          </div>
+          </Col>
+
+
         </Row>
-      </Container>
+
+        <Row className=" col-md-6 offset-md-3 offset-md-3 mt-2">
+          <Row>
+            <Col>
+             
+              
+                {primaryImageForItem.map((primaryItem) => {
+                  let path = `../../doc-uploads/${primaryItem.itemId}/${primaryItem.name}`;
+                  return (
+                    <Row className="justify-content-center">
+                      <ImageCardComponent
+                        path={path}
+                        imageData={JSON.stringify(primaryImageForItem[0])}
+                        setItemImageUpdate={setItemImageUpdate}
+                      />
+                    </Row>
+                  );
+                })}
+            </Col>
+          </Row>
+
+          {itemID ? (
+            <Col className="sm-4 col-md-12">
+              <Row>
+                <Link
+                  to={`/admin/add-images/${itemID}`}
+                  className="btn "
+                  style={{
+                    backgroundColor: "#6b5e51",
+                    color: "#f0eeed",
+                  }}
+                  state={{
+                    from: "/admin/edit-item/" + { itemID },
+                    body: { form },
+                  }}
+                >
+                  {imageButtonTitle()}
+                </Link>
+              </Row>
+            </Col>
+          ) : null}
+        </Row>
+        <Row className="card col-md-6 offset-md-3 offset-md-3 mt-2">
+          <Col>
+            {!newSavedForm ? (
+              <Col className=" col-12">
+                <Row>
+                  <Link to={"/admin"} className="btn btn-secondary">
+                    <span className="closeButton">Back</span>
+                  </Link>
+                </Row>
+              </Col>
+            ) : null}
+          </Col>
+
+        </Row>
+
+      </Container >
 
       {/* Modal window to collect new dropdown values for category and condition */}
 
-      <Modal show={show} onHide={handleClose}>
+      <Modal Modal show={show} onHide={handleClose} >
         <Modal.Header
           closeButton
           style={{ backgroundColor: "#F4DFB6", color: "#AA422F" }}
           className="defaultfontColor"
         >
           <Modal.Title>
-
             {Utility.getSelectionType(currentDropDownField)}
           </Modal.Title>
         </Modal.Header>
@@ -554,7 +613,7 @@ function CreateItemComponent() {
                   ? currentDropDownField[0].toUpperCase() +
                   currentDropDownField.slice(1)
                   : ""} */}
-                {Utility.getSelectionType(currentDropDownField)}
+                {/* {Utility.getSelectionType(currentDropDownField)} */}
               </Form.Label>
               <Form.Control
                 type="text"
@@ -577,14 +636,13 @@ function CreateItemComponent() {
             onClick={saveNewDropDownVal}
             style={{ backgroundColor: "#6b5e51", color: "#f0eeed" }}
           >
-            
             Add {Utility.getSelectionType(currentDropDownField)}
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal >
 
       {/* Modal window to let user know action successful */}
-      <Modal
+      <Modal Modal
         show={showSaveConfirmCondition}
         onHide={handleCloseSaveConfirm}
         size="lg"
@@ -610,7 +668,7 @@ function CreateItemComponent() {
             <span className="closeButton"> Close</span>
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal >
 
       <Modal
         show={showSaveConfirm}
@@ -691,7 +749,7 @@ function CreateItemComponent() {
           </Button>
         </Modal.Footer>
       </Modal>
-    </div>
+    </div >
   );
 }
 export default CreateItemComponent;

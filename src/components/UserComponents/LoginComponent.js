@@ -43,7 +43,7 @@ function LoginComponent() {
 
                 if (err.response && err.response.status === 401) {
                     setAuthError("User name or password is incorrect.");
-                }else{
+                } else {
                     setAuthError("Error Connecting to Server");
                 }
 
@@ -51,12 +51,12 @@ function LoginComponent() {
             });
     }
 
-    function closeErrorMsg(){
+    function closeErrorMsg() {
         setAuthError("");
     }
 
     return (
-        <Container  style={{ backgroundColor: '#F4DFB6' }}>
+        <Container style={{ backgroundColor: '#F4DFB6' }}>
             <h2 className="header">Login Form</h2>
             {authError ?
                 <div className="alert alert-danger alert-dismissible fade show">
@@ -105,10 +105,9 @@ function LoginComponent() {
                 </Form.Group>
                 <input type="submit" value="Login" onClick={loginUser} />
             </Form>
-            <a href="#" className="login-link">Don't have an account? Register here</a>
-
-
-
+            <Link to={"/user/register"}  >
+                <span className="login-link" >Don't have an account? Register here</span>
+            </Link>
         </Container>
 
     )
