@@ -44,6 +44,8 @@ function App() {
                 <Route path="/admin" element={<ListItemsComponent />} />
                 <Route path="/admin/edit-item/:id" element={<CreateItemComponent />} />
                 <Route path="/admin/add-images/:id" element={<AddImagesComponent />} />
+                <Route path="/admin/add-item" element={<CreateItemComponent />} />
+
               </Route>
             </Route>
 

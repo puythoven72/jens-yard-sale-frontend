@@ -95,10 +95,14 @@ function AddImagesComponent(props) {
           </>
         );
     }
-
   };
 
 
+  const formatFileName = (fileName)=>{
+    
+    let result = fileName.replace(/ /g, "_");
+    return result;
+  }
 
   const onImageChange = async (failedImages, successImages) => {
     setUploadProgress('upLoading');
@@ -106,19 +110,21 @@ function AddImagesComponent(props) {
     try {
       console.log('successImages', successImages);
       const parts = successImages[0].split(";");
+     
       // const mime = parts[0].split(":")[1];
       const name = parts[1].split("=")[1];
+      let fileName = formatFileName(name)
       // const data = parts[2];
       let blob = dataURItoBlob(successImages[0]);
 
       console.log(id + " IMAGE ID");
       let file = new FormData();
-      file.append("file", blob, name);
+      file.append("file", blob, fileName);
       file.append("isMain", false)
       file.append("itemId", id)
 
       await ItemServices.createItemImage(file);
-      setImageUrl(`./doc-uploads/${name}`);
+      setImageUrl(`./doc-uploads/${fileName}`);
       setUploadProgress('uploaded');
     }
     catch (error) {

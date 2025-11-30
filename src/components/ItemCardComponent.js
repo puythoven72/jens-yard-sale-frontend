@@ -22,8 +22,6 @@ function ItemCardComponent(props) {
     }).catch(error => console.log(error))
   }
 
-  console.log(props.item.id + " IS ID");
-  console.log(imagePath + " IS PATH");
   return (
    
     <Card className="card d-flex flex-column " style={{ backgroundColor: '#f0eeed', color: "#AA422F" }}>

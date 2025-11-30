@@ -46,37 +46,37 @@ function DisplayItemsComponent() {
     console.log(JSON.stringify(cats) + " CATS");
   }
 
-  async function getAllCategories() {
-    await ItemServices.getAllCategorySelections()
-      .then((response) => {
-        response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
-        setAllCategories(response.data);
-        // console.log(JSON.stringify(response.data) + " IS REPONSEs");
-      }).catch(error => { console.log(error) })
+  // async function getAllCategories() {
+  //   await ItemServices.getAllCategorySelections()
+  //     .then((response) => {
+  //       response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
+  //       setAllCategories(response.data);
+  //       // console.log(JSON.stringify(response.data) + " IS REPONSEs");
+  //     }).catch(error => { console.log(error) })
 
-  }
+  // }
 
-  async function getAllCategories1() {
-    await ItemServices.getAllCategories()
-      .then((response) => {
-        // response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
-        // setAllCategories(JSON.stringify(response.data[0]));
-        setAllCategories(response.data);
-      }).catch(error => { console.log(error) })
+  // async function getAllCategories1() {
+  //   await ItemServices.getAllCategories()
+  //     .then((response) => {
+  //       // response.data.push({ "id": -1, "selectionValue": "All", "selectionType": 100 })
+  //       // setAllCategories(JSON.stringify(response.data[0]));
+  //       setAllCategories(response.data);
+  //     }).catch(error => { console.log(error) })
 
-  }
+  // }
 
-  async function getAllCategories2() {
-    const names = [];
-    console.log(JSON.stringify(items) + "xxx");
-    for (const i of items) {
-      names.push(i.category);
-    }
+  // async function getAllCategories2() {
+  //   const names = [];
+  //   console.log(JSON.stringify(items) + "xxx");
+  //   for (const i of items) {
+  //     names.push(i.category);
+  //   }
 
-    console.log(JSON.stringify(names) + "CATS????");
+  //   console.log(JSON.stringify(names) + "CATS????");
 
 
-  }
+  // }
 
 
 

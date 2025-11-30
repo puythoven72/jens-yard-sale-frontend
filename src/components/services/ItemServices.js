@@ -44,8 +44,7 @@ class ItemService {
 
   deleteItemById(id) {
     let auth_header = AuthServices.getAuthHeaders();
-    console.log(auth_header);
-    return axios.delete(ITEM_BASE_API_URL + "/" + id,auth_header);
+     return axios.delete(ITEM_BASE_API_URL + "/" + id,auth_header);
   }
   markItemAsSoldById(id) {
     let auth_header = AuthServices.getAuthHeaders();
@@ -69,7 +68,6 @@ class ItemService {
       return axios.get(CONDITION_SELECT_URL,auth_header);
     }
     else{
-      console.log("Whats going on")
       return axios.get(ITEM_BASE_API_URL);
     }
     
